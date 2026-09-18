@@ -1,0 +1,24 @@
+{
+  "name": "Dinamo – utakmice, tablica i vijesti",
+  "short_name": "Dinamo",
+  "description": "Rezultati, tablica, raspored i vijesti.",
+  "lang": "hr",
+  "id": "./",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06265F",
+  "theme_color": "#06265F",
+  "categories": ["sports", "news"],
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Rezultati", "url": "./#results", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}]},
+    {"name": "Tablica", "url": "./#table", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}]},
+    {"name": "Raspored", "url": "./#fixtures", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}]}
+  ]
+}
