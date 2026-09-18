@@ -1,8 +1,9 @@
 # Zamijenite repo svojim: GITHUB-KORISNIK/IME-REPOZITORIJA
 backend:
   name: github
-  repo: GITHUB-KORISNIK/IME-REPOZITORIJA
+  repo: bestzagreb71-coder/dinamo-app
   branch: main
+
 
 locale: hr
 media_folder: uploads
