@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "img": "news/n1.svg",
+      "cat": "Utakmica",
+      "title": "Najava 9. kola: što očekivati od sljedeće utakmice",
+      "time": "Prije 2 sata",
+      "body": "Ovdje ide tekst vijesti. Zamijenite ga sadržajem iz vašeg CMS-a ili RSS izvora."
+    },
+    {
+      "img": "news/n2.svg",
+      "cat": "Analiza",
+      "title": "Forma momčadi nakon osam odigranih kola",
+      "time": "Prije 5 sati",
+      "body": "Kratki pregled rezultata, strijelaca i statistike. Ovo je primjer teksta za prikaz vijesti u aplikaciji."
+    },
+    {
+      "img": "news/n3.svg",
+      "cat": "Klub",
+      "title": "Trening uoči utakmice: izvještaj iz pripreme",
+      "time": "Jučer",
+      "body": "Primjer sadržaja. Dodajte slike, autora i poveznicu na cijeli članak."
+    },
+    {
+      "img": "news/n4.svg",
+      "cat": "Ulaznice",
+      "title": "Ulaznice za sljedeću domaću utakmicu u prodaji",
+      "time": "Jučer",
+      "body": "Primjer obavijesti o prodaji ulaznica. Dodajte poveznicu na službenu prodaju."
+    },
+    {
+      "img": "news/n5.svg",
+      "cat": "Tablica",
+      "title": "Pogled na poredak: borba za vrh nakon 8. kola",
+      "time": "Prije 2 dana",
+      "body": "Primjer analize poretka. Ovdje se može prikazati komentar uz tablicu."
+    },
+    {
+      "img": "news/n6.svg",
+      "cat": "Akademija",
+      "title": "Mladi igrači: pregled rada akademije",
+      "time": "Prije 3 dana",
+      "body": "Primjer članka o mlađim uzrastima kluba."
+    }
+  ]
+}

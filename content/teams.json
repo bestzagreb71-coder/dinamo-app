@@ -1,0 +1,104 @@
+{
+  "items": [
+    {
+      "id": "DIN",
+      "logo": "crests/din.png",
+      "short": "DIN",
+      "name": "Dinamo Zagreb",
+      "nick": "Dinamo",
+      "color": "#0A47B8",
+      "str": 9,
+      "stadium": "Stadion Maksimir"
+    },
+    {
+      "id": "HAJ",
+      "logo": "crests/haj.png",
+      "short": "HAJ",
+      "name": "Hajduk Split",
+      "nick": "Hajduk",
+      "color": "#1B2A5C",
+      "str": 8,
+      "stadium": "Stadion Poljud"
+    },
+    {
+      "id": "RIJ",
+      "logo": "crests/rij.png",
+      "short": "RIJ",
+      "name": "HNK Rijeka",
+      "nick": "Rijeka",
+      "color": "#2A9BD6",
+      "str": 7.5,
+      "stadium": "Stadion Rujevica"
+    },
+    {
+      "id": "OSI",
+      "logo": "crests/osi.png",
+      "short": "OSI",
+      "name": "NK Osijek",
+      "nick": "Osijek",
+      "color": "#5B7DD8",
+      "str": 6.5,
+      "stadium": "Opus Arena"
+    },
+    {
+      "id": "LOK",
+      "logo": "crests/lok.png",
+      "short": "LOK",
+      "name": "NK Lokomotiva",
+      "nick": "Lokomotiva",
+      "color": "#C8352F",
+      "str": 6,
+      "stadium": "Stadion Kranjčevićeva"
+    },
+    {
+      "id": "VAR",
+      "logo": "crests/var.png",
+      "short": "VAR",
+      "name": "NK Varaždin",
+      "nick": "Varaždin",
+      "color": "#E0701B",
+      "str": 5,
+      "stadium": "Stadion Varteks"
+    },
+    {
+      "id": "IST",
+      "logo": "crests/ist.png",
+      "short": "IST",
+      "name": "Istra 1961",
+      "nick": "Istra",
+      "color": "#1E8E5A",
+      "str": 5,
+      "stadium": "Stadion Aldo Drosina"
+    },
+    {
+      "id": "GOR",
+      "logo": "crests/gor.png",
+      "short": "GOR",
+      "name": "HNK Gorica",
+      "nick": "Gorica",
+      "color": "#D6A100",
+      "str": 4.5,
+      "stadium": "Stadion Velika Gorica"
+    },
+    {
+      "id": "SLA",
+      "logo": "crests/sla.png",
+      "short": "SLA",
+      "name": "Slaven Belupo",
+      "nick": "Slaven",
+      "color": "#8E3B46",
+      "str": 4.5,
+      "stadium": "Gradski stadion Koprivnica"
+    },
+    {
+      "id": "VUK",
+      "logo": "crests/vuk.png",
+      "short": "VUK",
+      "name": "Vukovar 1991",
+      "nick": "Vukovar",
+      "color": "#4B4F5C",
+      "str": 4,
+      "stadium": "Gradski stadion Vukovar"
+    }
+  ]
+}
