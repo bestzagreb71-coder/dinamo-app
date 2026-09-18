@@ -1,0 +1,65 @@
+# Zamijenite repo svojim: GITHUB-KORISNIK/IME-REPOZITORIJA
+backend:
+  name: github
+  repo: GITHUB-KORISNIK/IME-REPOZITORIJA
+  branch: main
+
+locale: hr
+media_folder: uploads
+public_folder: /uploads
+
+collections:
+  - name: sadrzaj
+    label: Sadržaj aplikacije
+    files:
+      - name: vijesti
+        label: Vijesti
+        file: content/news.json
+        fields:
+          - label: Vijesti
+            name: items
+            widget: list
+            label_singular: vijest
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Slika, name: img, widget: image, required: false }
+              - { label: Kategorija, name: cat, widget: string }
+              - { label: Naslov, name: title, widget: string }
+              - { label: "Vrijeme (npr. Prije 2 sata)", name: time, widget: string }
+              - { label: Tekst, name: body, widget: text }
+
+      - name: klubovi
+        label: Klubovi i grbovi
+        file: content/teams.json
+        fields:
+          - label: Klubovi
+            name: items
+            widget: list
+            label_singular: klub
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "Oznaka (3 slova, ne mijenjati)", name: id, widget: string }
+              - { label: Grb, name: logo, widget: image, required: false }
+              - { label: "Kratica", name: short, widget: string }
+              - { label: "Puni naziv", name: name, widget: string }
+              - { label: "Kratki naziv (naslov utakmice)", name: nick, widget: string }
+              - { label: "Boja monograma (npr. #0A47B8)", name: color, widget: string }
+              - { label: Stadion, name: stadium, widget: string }
+              - { label: "Snaga (samo za demo rezultate)", name: str, widget: number, value_type: float, required: false }
+
+      - name: tekstovi
+        label: Tekstovi
+        file: content/text.json
+        fields:
+          - { label: "Naziv u zaglavlju", name: brandName, widget: string }
+          - { label: "Podnaslov u zaglavlju", name: brandSub, widget: string }
+          - { label: "Natpis iznad sljedeće utakmice", name: heroLead, widget: string }
+          - { label: "Napomena na stranici Vijesti", name: newsNote, widget: string }
+          - { label: "Podnožje", name: footer, widget: string }
+
+      - name: sezona
+        label: Sezona
+        file: content/season.json
+        fields:
+          - { label: "Broj odigranih kola", name: playedRounds, widget: number, value_type: int, min: 0, max: 36 }
+          - { label: "Početak sezone (npr. 2026-07-25T18:00:00+02:00)", name: seasonStart, widget: string }
