@@ -386,11 +386,15 @@ const ROUNDS = buildRounds().map((pairs,ri)=>{
   });
 
   ROUNDS.forEach(rd=>rd.forEach(m=>{
-    if(m.round===9 && m.h==='DIN' && m.a==='LOK'){
-      [m.h,m.a]=[m.a,m.h];
-      if(m.hg!=null)[m.hg,m.ag]=[m.ag,m.hg];
-    }
-  }));
+  if(m.round===9 && m.h==='DIN' && m.a==='HAJ'){
+    [m.h,m.a]=[m.a,m.h];
+    if(m.hg!=null)[m.hg,m.ag]=[m.ag,m.hg];
+  }
+  if(m.round===10 && m.h==='DIN' && m.a==='LOK'){
+    [m.h,m.a]=[m.a,m.h];
+    if(m.hg!=null)[m.hg,m.ag]=[m.ag,m.hg];
+  }
+}));
 
   
 const ALL = ROUNDS.flat();
