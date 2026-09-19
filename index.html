@@ -273,7 +273,7 @@ const fmtD=new Intl.DateTimeFormat('hr-HR',{weekday:'short',day:'numeric',month:
 const fmtT=new Intl.DateTimeFormat('hr-HR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zagreb'});
 const fmtL=new Intl.DateTimeFormat('hr-HR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zagreb'});
 const $=s=>document.querySelector(s);
-const state={tab:'home',res:{round:PLAYED_ROUNDS,club:'ALL'},fix:{round:PLAYED_ROUNDS+1,club:'DIN'},open:null};
+const state={tab:'home',res:{round:PLAYED_ROUNDS,club:'DIN'},fix:{round:PLAYED_ROUNDS+1,club:'DIN'},open:null};
 
 const _h=location.hash.slice(1);
 if(['home','results','table','fixtures','news'].includes(_h)) state.tab=_h;
@@ -327,8 +327,8 @@ return `<div class="chip ${r}"><b>${g}:${c}</b><span>${home?'protiv':'kod'} ${T[
 }).join('');
 const r=PLAYED_ROUNDS+1;
 return `<section><h3 class="forma-head" id="formaHead" role="button" tabindex="0" aria-expanded="false">Forma Dinama</h3><div class="form" aria-label="Zadnjih pet utakmica">${chips}</div><div id="statsPanel" class="stats-panel"></div></section>
-<section><div class="row-head"><h3>Sljedeće utakmice · ${r}. kolo</h3><button class="link" data-act="tab" data-tab="fixtures">Cijeli raspored</button></div>${byDay(ROUNDS[r-1])}</section>
-<section><div class="row-head"><h3>Zadnji rezultati</h3><button class="link" data-act="tab" data-tab="results">Svi rezultati</button></div>${byDay(ROUNDS[PLAYED_ROUNDS-1])}</section>
+<section><div class="row-head"><h3>Sljedeće utakmice · ${r}. kolo</h3><button class="link" data-act="tab" data-tab="fixtures">Cijeli raspored</button></div>${byDay(ROUNDS[r-1].filter(m=>m.h==='DIN'||m.a==='DIN'))}</section>
+<section><div class="row-head"><h3>Zadnji rezultati</h3><button class="link" data-act="tab" data-tab="results">Svi rezultati</button></div>${byDay(ROUNDS[PLAYED_ROUNDS-1].filter(m=>m.h==='DIN'||m.a==='DIN'))}</section>
 <section><div class="row-head"><h3>Vijesti</h3><button class="link" data-act="tab" data-tab="news">Sve vijesti</button></div>${newsHTML(3)}</section>`;
 }
 
