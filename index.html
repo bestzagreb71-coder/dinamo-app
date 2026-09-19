@@ -191,7 +191,23 @@ html,body{overscroll-behavior-y:none}
 .radar .axis{stroke:var(--line);stroke-width:1}
 .radar .shape{fill:var(--blue);fill-opacity:.25;stroke:var(--blue);stroke-width:2}
 .radar .pt{fill:var(--blue)}
-.radar .lbl{font-size:11px;font-weight:700;fill:var(--muted)}
+.radar .lbl{font-size:11px;font-weight:700;fill:var(--muted)}.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;z-index:80;padding:0}
+@media (min-width:820px){.modal-backdrop{align-items:center;padding:20px}}
+.modal-card{background:var(--surface);border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+@media (min-width:820px){.modal-card{border-radius:16px}}
+.modal-card h4{font-family:var(--display);font-weight:800;font-size:21px;margin:0 0 2px;padding-right:40px}
+.modal-score{font-family:var(--display);font-weight:900;font-size:40px;text-align:center;margin:14px 0}
+.scorers{display:flex;justify-content:space-between;gap:18px;margin-top:8px}
+.scorers > div{flex:1;min-width:0}
+.scorers h5{font-size:12px;color:var(--muted);margin:0 0 8px;text-transform:uppercase;font-weight:700;letter-spacing:.03em}
+.scorers ul{list-style:none;padding:0;margin:0}
+.scorers li{padding:7px 0;font-size:14px;font-weight:600;border-bottom:1px solid var(--line)}
+.scorers li:last-child{border-bottom:0}
+.scorers li b{color:var(--blue);font-weight:800;margin-right:6px;font-variant-numeric:tabular-nums}
+.modal-close{position:absolute;top:16px;right:16px;border:0;background:var(--bg);color:var(--ink);width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer}
+.modal-card{position:relative}
+.match[data-act="match"]{cursor:pointer}
+.match[data-act="match"]:active{opacity:.7}
 .hero-crests{display:flex;gap:14px;margin:12px 0 2px}
 .hero-crests .crest{width:60px;height:60px;font-size:18px}
 </style>
@@ -288,11 +304,31 @@ const TABS=[['home','Početna'],['results','Rezultati'],['table','Tablica'],['fi
 
 const crest=id=>`<span class="crest" style="--c:${T[id].color}" aria-hidden="true">${T[id].short}${T[id].logo?`<img src="${T[id].logo}" alt="" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">`:''}</span>`;
 const tname=id=>`<span class="n-full">${T[id].name}</span><span class="n-short">${T[id].short}</span>`;
-
+const SCORER_NAMES=['Horvat','Kovačić','Babić','Jurić','Perić','Matić','Vuković','Novak','Kralj','Marić','Barišić','Grgić','Tomić','Šarić','Vidović','Kolar','Pavić','Zorić','Lončar','Radić','Filipović','Đurić','Blažević','Ivančić','Kos','Krznarić','Šimić','Bilić'];
+function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=(h<<5)-h+s.charCodeAt(i);h|=0}return Math.abs(h)}
+function scorersFor(m){
+if(m.hg==null) return null;
+const rng2=mulberry32(hashStr(`${m.round}-${m.h}-${m.a}`));
+const pick=()=>SCORER_NAMES[Math.floor(rng2()*SCORER_NAMES.length)];
+const mkList=n=>{const mins=[];for(let i=0;i<n;i++)mins.push(1+Math.floor(rng2()*90));mins.sort((a,b)=>a-b);return mins.map(min=>({min,name:pick()}))};
+return {home:mkList(m.hg),away:mkList(m.ag)};
+}
+function findMatch(r,h,a){return ALL.find(x=>String(x.round)===String(r)&&x.h===h&&x.a===a)}
+function matchModalHTML(m){
+const s=scorersFor(m);
+const li=g=>`<li><b>${g.min}'</b>${g.name}</li>`;
+const homeList=s.home.length?s.home.map(li).join(''):'<li style="color:var(--muted);border:0">Bez golova</li>';
+const awayList=s.away.length?s.away.map(li).join(''):'<li style="color:var(--muted);border:0">Bez golova</li>';
+return `<div class="modal-backdrop" data-act="closeModal"><div class="modal-card" role="dialog" aria-label="Detalji utakmice"><button class="modal-close" data-act="closeModal" aria-label="Zatvori">✕</button><h4>${T[m.h].name} – ${T[m.a].name}</h4><p class="modal-score">${m.hg}:${m.ag}</p><div class="scorers"><div><h5>${T[m.h].short}</h5><ul>${homeList}</ul></div><div><h5>${T[m.a].short}</h5><ul>${awayList}</ul></div></div></div></div>`;
+}
+function showMatchModal(m){closeMatchModal();const d=document.createElement('div');d.innerHTML=matchModalHTML(m);document.body.appendChild(d.firstChild)}
+function closeMatchModal(){document.querySelector('.modal-backdrop')?.remove()}
 function matchRow(m){
-  const played=m.hg!=null, din=m.h==='DIN'||m.a==='DIN';
-  const mid=played?`<span class="score" aria-label="${m.hg} prema ${m.ag}">${m.hg}<i>:</i>${m.ag}</span>`:`<span class="ko">${fmtT.format(m.ts)}</span>`;
-  return `<li class="match${din?' is-din':''}"><span class="side home">${tname(m.h)}${crest(m.h)}</span><span class="mid">${mid}</span><span class="side away">${crest(m.a)}${tname(m.a)}</span></li>`;
+const played=m.hg!=null, din=m.h==='DIN'||m.a==='DIN';
+const mid=played?`<span class="score" aria-label="${m.hg} prema ${m.ag}">${m.hg}<i>:</i>${m.ag}</span>`:`<span class="ko">${fmtT.format(m.ts)}</span>`;
+const clk=played?` data-act="match" data-r="${m.round}" data-h="${m.h}" data-a="${m.a}" tabindex="0" role="button"`:'';
+return `<li class="match${din?' is-din':''}"${clk}><span class="side home">${tname(m.h)}${crest(m.h)}</span><span class="mid">${mid}</span><span class="side away">${crest(m.a)}${tname(m.a)}</span></li>`;
+}
 }
 function byDay(ms){
   const g=new Map(); ms.forEach(m=>{const k=fmtD.format(m.ts);(g.get(k)||g.set(k,[]).get(k)).push(m)});
@@ -407,12 +443,19 @@ document.addEventListener('click',e=>{
   else if(a==='round'){const st=state[t.dataset.kind],lim=t.dataset.kind==='res'?[1,PLAYED_ROUNDS]:[PLAYED_ROUNDS+1,ROUNDS.length];st.round=Math.min(lim[1],Math.max(lim[0],st.round+ +t.dataset.d));render()}
   else if(a==='story'){state.open=state.open===t.dataset.t?null:t.dataset.t;render()}
 });document.addEventListener('click',e=>{
-const h=e.target.closest('#formaHead'); if(!h) return;
+const h=e.target.closest('#formaHead');document.addEventListener('click',e=>{
+const cm=e.target.closest('[data-act="match"]');
+if(cm){const m=findMatch(cm.dataset.r,cm.dataset.h,cm.dataset.a); if(m) showMatchModal(m); return;}
+if(e.target.closest('[data-act="closeModal"]')) closeMatchModal();
+});
+document.addEventListener('keydown',e=>{
+if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-act="match"]')){e.preventDefault();e.target.click()}
+}); if(!h) return;
 const open=h.classList.toggle('open');
 h.setAttribute('aria-expanded',open);
 const p=document.getElementById('statsPanel');
 p.classList.toggle('open',open);
-if(open) p.innerHTML=statsPanelHTML();
+if(open) p.innerHTML=statsPanelHTML(); 
 });
 document.addEventListener('change',e=>{
   const t=e.target.closest('[data-act="club"]'); if(!t) return;
