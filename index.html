@@ -273,7 +273,7 @@ const fmtD=new Intl.DateTimeFormat('hr-HR',{weekday:'short',day:'numeric',month:
 const fmtT=new Intl.DateTimeFormat('hr-HR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zagreb'});
 const fmtL=new Intl.DateTimeFormat('hr-HR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zagreb'});
 const $=s=>document.querySelector(s);
-const state={tab:'home',res:{round:PLAYED_ROUNDS,club:'ALL'},fix:{round:PLAYED_ROUNDS+1,club:'ALL'},open:null};
+const state={tab:'home',res:{round:PLAYED_ROUNDS,club:'ALL'},fix:{round:PLAYED_ROUNDS+1,club:'DIN'},open:null};
 
 const _h=location.hash.slice(1);
 if(['home','results','table','fixtures','news'].includes(_h)) state.tab=_h;
