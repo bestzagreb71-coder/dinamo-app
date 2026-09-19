@@ -1,71 +1,53 @@
-//* Povećajte VERSION pri svakom objavljivanju nove verzije aplikacije. */
-const VERSION = 'v5';
-const CORE = `dinamo-core-${VERSION}`;
-const RUNTIME = `dinamo-runtime-${VERSION}`;
+//* Service worker: network-first (uvijek svježi kod i podaci), cache samo kao rezerva izvan mreže.
+   Kad god želiš prisiliti sve korisnike na nove datoteke, promijeni broj verzije ispod. */
+const VERSION = 'v2';
+const CACHE = 'dinamo-' + VERSION;
+
 const PRECACHE = [
-  './', 'index.html', 'manifest.webmanifest',
-  'content/text.json', 'content/teams.json', 'content/news.json', 'content/season.json',
-  'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png',
-  'icons/apple-touch-icon.png', 'icons/favicon-32.png'
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './content/text.json',
+  './content/teams.json',
+  './content/news.json',
+  './content/season.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CORE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+self.addEventListener('install', event => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE).then(c => Promise.allSettled(PRECACHE.map(u => c.add(u))))
+  );
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(
+self.addEventListener('activate', event => {
+  event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => ![CORE, RUNTIME].includes(k)).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', e => {
-  const req = e.request;
+self.addEventListener('fetch', event => {
+  const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (url.origin !== location.origin) return; // fontovi i ostalo idu direktno
 
-  // Admin panel se ne dira
-  if (url.origin === location.origin && url.pathname.startsWith('/admin')) return;
-
-  // Sadržaj (content/*.json): mreža prvo, da izmjene stignu odmah
-  if (url.origin === location.origin && url.pathname.includes('/content/')) {
-    e.respondWith(
-      fetch(req).then(res => {
-        const copy = res.clone();
-        caches.open(RUNTIME).then(c => c.put(req, copy));
+  event.respondWith(
+    fetch(req, { cache: 'no-cache' })
+      .then(res => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copy));
+        }
         return res;
-      }).catch(() => caches.match(req))
-    );
-    return;
-  }
-
-  // Stranica: mreža prvo, uz rezervu iz predmemorije (radi bez interneta)
-  if (req.mode === 'navigate') {
-    e.respondWith(
-      fetch(req).then(res => {
-        const copy = res.clone();
-        caches.open(CORE).then(c => c.put('index.html', copy));
-        return res;
-      }).catch(() => caches.match('index.html'))
-    );
-    return;
-  }
-
-  // Ostalo (ikone, fontovi, podaci): predmemorija odmah, osvježi u pozadini
-  if (url.origin === location.origin || /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) {
-    e.respondWith(
-      caches.match(req).then(hit => {
-        const net = fetch(req).then(res => {
-          if (res && (res.ok || res.type === 'opaque')) {
-            const copy = res.clone();
-            caches.open(RUNTIME).then(c => c.put(req, copy));
-          }
-          return res;
-        }).catch(() => hit);
-        return hit || net;
       })
-    );
-  }
+      .catch(() =>
+        caches.match(req).then(hit => hit || (req.mode === 'navigate' ? caches.match('./index.html') : undefined))
+      )
+  );
 });
+a
