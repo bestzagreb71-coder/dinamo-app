@@ -442,6 +442,8 @@ document.addEventListener('click',e=>{
   if(a==='tab'){state.tab=t.dataset.tab;try{history.replaceState(null,'','#'+state.tab)}catch(_){}render();window.scrollTo({top:0})}
   else if(a==='round'){const st=state[t.dataset.kind],lim=t.dataset.kind==='res'?[1,PLAYED_ROUNDS]:[PLAYED_ROUNDS+1,ROUNDS.length];st.round=Math.min(lim[1],Math.max(lim[0],st.round+ +t.dataset.d));render()}
   else if(a==='story'){state.open=state.open===t.dataset.t?null:t.dataset.t;render()}
+  else if(a==='match'){const m=findMatch(t.dataset.r,t.dataset.h,t.dataset.a);if(m&&m.hg!=null)showMatchModal(m)}
+else if(a==='closeModal'){if(t.classList.contains('modal-close')||e.target===t)closeMatchModal()}
 });document.addEventListener('click',e=>{
 const h=e.target.closest('#formaHead');if(!h) return;
 const open=h.classList.toggle('open');
