@@ -329,7 +329,7 @@ const mid=played?`<span class="score" aria-label="${m.hg} prema ${m.ag}">${m.hg}
 const clk=played?` data-act="match" data-r="${m.round}" data-h="${m.h}" data-a="${m.a}" tabindex="0" role="button"`:'';
 return `<li class="match${din?' is-din':''}"${clk}><span class="side home">${tname(m.h)}${crest(m.h)}</span><span class="mid">${mid}</span><span class="side away">${crest(m.a)}${tname(m.a)}</span></li>`;
 }
-}
+
 function byDay(ms){
   const g=new Map(); ms.forEach(m=>{const k=fmtD.format(m.ts);(g.get(k)||g.set(k,[]).get(k)).push(m)});
   return [...g].map(([k,a])=>`<h4 class="day">${k}</h4><ul class="matches">${a.map(matchRow).join('')}</ul>`).join('');
