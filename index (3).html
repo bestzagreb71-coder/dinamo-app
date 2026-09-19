@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06265F">
+<meta name="description" content="Rezultati, tablica, raspored i vijesti.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dinamo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Dinamo · Utakmice, tablica i vijesti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F5FA; --surface:#FFFFFF; --ink:#0C1B3A; --muted:#5B6885; --line:#DCE3EF;
+  --blue:#0A47B8; --blue-deep:#06265F; --blue-soft:#E4ECFB;
+  --win:#1E8E5A; --draw:#8A94A8; --loss:#C8352F;
+  --zone-champ:#0A47B8; --zone-eu:#2A9BD6; --zone-play:#E0A100; --zone-rel:#C8352F;
+  --display:'Big Shoulders Display','Arial Narrow','Helvetica Neue',Impact,sans-serif;
+  --text:'Figtree','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#08122A; --surface:#0F1D3F; --ink:#EAF0FF; --muted:#9AA9CC; --line:#1D2E5C;
+    --blue:#5C93F5; --blue-soft:#15275A; --win:#3CBF85; --loss:#F0625B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08122A; --surface:#0F1D3F; --ink:#EAF0FF; --muted:#9AA9CC; --line:#1D2E5C;
+  --blue:#5C93F5; --blue-soft:#15275A; --win:#3CBF85; --loss:#F0625B;
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.5;padding-bottom:84px}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+
+/* Header + navigation */
+.top{background:var(--blue-deep);color:#fff;position:sticky;top:0;z-index:20}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.02em}
+.brand .mark{width:32px;height:32px;border-radius:50%;background:#fff;color:var(--blue);display:grid;place-items:center;font-weight:900;font-size:20px}
+.brand small{font-family:var(--text);font-weight:500;font-size:13px;opacity:.7;letter-spacing:0}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom);z-index:30}
+nav.tabs button{background:none;border:0;padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
+nav.tabs svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button[aria-current="page"]{color:var(--blue)}
+nav.tabs button[aria-current="page"] svg{stroke-width:2.4}
+@media (min-width:820px){
+  body{padding-bottom:40px}
+  nav.tabs{position:static;background:none;border:0;display:flex;gap:4px;padding:0}
+  nav.tabs button{flex-direction:row;gap:8px;padding:8px 14px;border-radius:999px;color:#C9D6F4;font-size:15px}
+  nav.tabs button svg{width:18px;height:18px}
+  nav.tabs button[aria-current="page"]{background:#fff;color:var(--blue-deep)}
+  .top .wrap{height:64px}
+}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(160deg,#0A47B8 0%,#06265F 100%)}
+.hero svg.pitch{position:absolute;inset:0;width:100%;height:100%;opacity:.13}
+.hero .wrap{position:relative;padding-top:28px;padding-bottom:28px}
+.hero .lead{font-weight:600;font-size:15px;opacity:.85}
+.hero h2{font-family:var(--display);font-weight:900;line-height:.86;font-size:clamp(52px,15vw,128px);letter-spacing:.005em;margin:10px 0 0;text-transform:uppercase}
+.hero h2 .vs{display:block;font-size:.3em;font-weight:700;opacity:.6;margin:.25em 0 .2em;letter-spacing:.06em}
+.hero .when{margin-top:18px;font-weight:600;font-size:17px}
+.hero .where{opacity:.8;font-size:15px}
+.cd{display:flex;gap:10px;margin-top:18px}
+.cd div{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:10px;min-width:64px;padding:8px 10px;text-align:center}
+.cd b{display:block;font-family:var(--display);font-size:32px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums}
+.cd span{font-size:12px;opacity:.8}
+.hero .live{margin-top:18px;font-weight:700}
+.hero .standing{margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2);display:flex;gap:26px;flex-wrap:wrap}
+.hero .standing b{font-family:var(--display);font-size:28px;font-weight:800;line-height:1}
+.hero .standing span{display:block;font-size:13px;opacity:.75}
+
+/* Sections */
+main{padding-top:22px}
+section{margin-bottom:30px}
+h3{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.1;margin-bottom:12px}
+.sub{color:var(--muted);font-size:14px;margin:-6px 0 12px}
+.row-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.link{background:none;border:0;color:var(--blue);font-weight:700;cursor:pointer;padding:4px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+
+/* Form chips */
+.form{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.chip{flex:0 0 auto;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--draw);border-radius:10px;padding:8px 12px;min-width:92px;text-align:center}
+.chip.W{border-top-color:var(--win)} .chip.L{border-top-color:var(--loss)}
+.chip b{font-family:var(--display);font-size:24px;font-weight:800;display:block;line-height:1.1}
+.chip span{font-size:12px;color:var(--muted)}
+
+/* Match lists */
+h4.day{font-size:14px;font-weight:700;color:var(--muted);margin:14px 0 6px;text-transform:none}
+ul.matches{list-style:none;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.match{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:12px 12px;border-bottom:1px solid var(--line)}
+.match:last-child{border-bottom:0}
+.match.is-din{background:var(--blue-soft);box-shadow:inset 4px 0 0 var(--blue)}
+.side{display:flex;align-items:center;gap:8px;font-weight:600;min-width:0}
+.side.home{justify-content:flex-end;text-align:right}
+.n-short{display:none}
+.mid{min-width:64px;text-align:center}
+.score{font-family:var(--display);font-weight:900;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.score i{font-style:normal;opacity:.4;margin:0 3px}
+.ko{font-family:var(--display);font-weight:800;font-size:22px;background:var(--bg);border-radius:8px;padding:2px 10px;display:inline-block}
+.crest{--c:#0A47B8;flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:11px;letter-spacing:.02em}
+@media (max-width:480px){.n-full{display:none}.n-short{display:inline}}
+
+/* Controls */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.roundnav{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.roundnav strong{min-width:88px;text-align:center;font-family:var(--display);font-size:22px;font-weight:800}
+.roundnav button{width:38px;height:38px;border-radius:50%;border:0;background:var(--blue);color:#fff;font-size:22px;cursor:pointer;line-height:1}
+.roundnav button:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+select{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:10px 14px;font-weight:600;min-height:46px}
+
+/* Table */
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:340px}
+th{font-size:12px;color:var(--muted);font-weight:600;text-align:center;padding:10px 6px;border-bottom:1px solid var(--line)}
+td{padding:9px 6px;text-align:center;border-bottom:1px solid var(--line);font-size:15px}
+tr:last-child td{border-bottom:0}
+th.l,td.l{text-align:left}
+td.pos{font-family:var(--display);font-weight:800;font-size:20px;width:38px;box-shadow:inset 5px 0 0 var(--z,transparent)}
+td.club .in{display:flex;align-items:center;gap:10px;font-weight:600}
+td.pts{font-family:var(--display);font-weight:900;font-size:22px}
+tr.din td{background:var(--blue-soft)}
+.dots{display:inline-flex;gap:4px}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--draw)}
+.dots i.W{background:var(--win)} .dots i.L{background:var(--loss)}
+.hide-s{display:none}
+@media (min-width:640px){.hide-s{display:table-cell}}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--z);margin-right:6px}
+
+/* News */
+.news{display:grid;gap:12px}
+@media (min-width:700px){.news{grid-template-columns:1fr 1fr}.news .feat{grid-column:1/-1}}
+.story{padding:0;overflow:hidden;text-align:left;width:100%;cursor:pointer;display:block}
+.story .body{padding:14px 16px 16px}
+.story img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--blue-soft)}
+@media (min-width:700px){.story.feat{display:grid;grid-template-columns:1.25fr 1fr}.story.feat img{height:100%;aspect-ratio:auto;min-height:240px}.story.feat .body{align-self:center;padding:22px}}
+.story .cat{display:inline-block;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:12px;padding:3px 10px;border-radius:999px}
+.story h5{font-family:var(--display);font-size:24px;line-height:1.1;font-weight:800;margin:10px 0 4px}
+.story.feat h5{font-size:clamp(28px,5vw,40px)}
+.story time{font-size:13px;color:var(--muted)}
+.story p{margin-top:10px;color:var(--muted);max-width:66ch}
+.story:not(.open) p{display:none}
+.demo{background:var(--blue-soft);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted);margin-bottom:14px}
+footer{color:var(--muted);font-size:13px;padding:6px 0 30px}
+
+/* PWA */
+html,body{overscroll-behavior-y:none}
+.top{padding-top:env(safe-area-inset-top)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:600;z-index:60;max-width:calc(100% - 32px);text-align:center}
+.install{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:center;z-index:50;box-shadow:0 10px 30px rgba(6,38,95,.25)}
+.install .mark{width:40px;height:40px;border-radius:10px;flex:0 0 auto}
+.install p{flex:1;font-size:14px;line-height:1.35}
+.install p b{display:block;font-size:15px}
+.install button{border:0;border-radius:999px;padding:9px 14px;font-weight:700;cursor:pointer}
+.install .go{background:var(--blue);color:#fff}
+.install .x{background:none;color:var(--muted);padding:9px 8px}
+@media (min-width:820px){.install{left:auto;right:20px;bottom:20px;max-width:380px}.toast{bottom:24px}}
+@media (display-mode:standalone){.install{display:none}}
+.crest{position:relative;overflow:hidden}
+.crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0}
+.crest.has-img{background:none;color:transparent;overflow:visible}
+.crest.has-img img{opacity:1}.forma-head{cursor:pointer;user-select:none}
+.forma-head::after{content:'▸';display:inline-block;margin-left:6px;transition:transform .2s;color:var(--blue)}
+.forma-head.open::after{transform:rotate(90deg)}
+.stats-panel{display:none;margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.stats-panel.open{display:block}
+.rings{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.ring{width:96px;text-align:center}
+.ring svg{transform:rotate(-90deg);width:96px;height:96px}
+.ring .track{fill:none;stroke:var(--line);stroke-width:10}
+.ring .val{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray .6s ease}
+.ring-wrap{position:relative;width:96px;height:96px}
+.ring-num{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:22px}
+.ring .lbl{margin-top:6px;font-size:12px;color:var(--muted);font-weight:600}
+.radar-title{font-family:var(--display);font-weight:800;font-size:18px;margin:4px 0 10px;text-align:center}
+.radar svg{width:100%;max-width:280px;display:block;margin:0 auto}
+.radar .grid{fill:none;stroke:var(--line);stroke-width:1}
+.radar .axis{stroke:var(--line);stroke-width:1}
+.radar .shape{fill:var(--blue);fill-opacity:.25;stroke:var(--blue);stroke-width:2}
+.radar .pt{fill:var(--blue)}
+.radar .lbl{font-size:11px;font-weight:700;fill:var(--muted)}
+.hero-crests{display:flex;gap:14px;margin:12px 0 2px}
+.hero-crests .crest{width:60px;height:60px;font-size:18px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="mark" aria-hidden="true">D</span><span id="brandTxt"></span></div>
+    <nav class="tabs" aria-label="Glavna navigacija" id="nav"></nav>
+  </div>
+</header>
+<div id="heroSlot"></div>
+<main class="wrap" id="main"></main>
+<div class="wrap"><footer id="foot"></footer></div>
+
+<script>
+(async function(){
+const load=u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(u);return r.json()});
+let TEXT,TEAMS,NEWS,PLAYED_ROUNDS,BASE;
+try{
+  const [tx,tm,nw,se]=await Promise.all([load('content/text.json'),load('content/teams.json'),load('content/news.json'),load('content/season.json')]);
+  TEXT=tx;TEAMS=tm.items;NEWS=nw.items;PLAYED_ROUNDS=Number(se.playedRounds)||0;BASE=Date.parse(se.seasonStart);
+}catch(err){
+  document.body.insertAdjacentHTML('afterbegin','<p style="padding:24px;font-weight:600">Podaci se nisu mogli učitati. Provjerite vezu i osvježite stranicu.</p>');
+  return;
+}
+/* ---------- generiranje rasporeda (svi klubovi, 36 kola) ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rng = mulberry32(2026);
+function pois(l){const L=Math.exp(-l);let k=0,p=1;do{k++;p*=rng()}while(p>L);return k-1}
+const T = Object.fromEntries(TEAMS.map(t=>[t.id,t]));
+function simulate(h,a){
+  const d=T[h].str-T[a].str;
+  return [pois(Math.max(.3,1.4+.13*d)),pois(Math.max(.25,1.0-.13*d))];
+}
+function buildRounds(){
+  const ids=TEAMS.map(t=>t.id), n=ids.length; let arr=[...ids]; const first=[];
+  for(let r=0;r<n-1;r++){
+    const round=[];
+    for(let i=0;i<n/2;i++){let h=arr[i],a=arr[n-1-i]; if((r+i)%2===1)[h,a]=[a,h]; round.push({h,a});}
+    first.push(round); arr=[arr[0],arr[n-1],...arr.slice(1,n-1)];
+  }
+  const all=[];
+  for(let leg=0;leg<4;leg++) first.forEach(rd=>all.push(rd.map(p=>leg%2?{h:p.a,a:p.h}:p)));
+  return all;
+}
+const SLOTS=[0,2.5,21,23.5,26].map(h=>h*36e5);
+const ROUNDS = buildRounds().map((pairs,ri)=>{
+  const idx=pairs.findIndex(p=>p.h==='DIN'||p.a==='DIN');
+  const others=pairs.filter((_,i)=>i!==idx);
+  const ordered=[others[0],pairs[idx],...others.slice(1)];
+  return ordered.map((p,si)=>{
+    const m={round:ri+1,h:p.h,a:p.a,ts:BASE+ri*7*864e5+SLOTS[si]};
+    if(ri<PLAYED_ROUNDS){[m.hg,m.ag]=simulate(p.h,p.a);}
+    return m;
+  });
+});
+const ALL = ROUNDS.flat();
+const PLAYED = ALL.filter(m=>m.hg!=null);
+const NEXT_DIN = ALL.find(m=>m.hg==null&&(m.h==='DIN'||m.a==='DIN'));
+
+/* ---------- tablica ---------- */
+function standings(){
+  const s=Object.fromEntries(TEAMS.map(t=>[t.id,{id:t.id,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0,form:[]}]));
+  [...PLAYED].sort((a,b)=>a.ts-b.ts).forEach(m=>{
+    const H=s[m.h],A=s[m.a]; H.p++;A.p++; H.gf+=m.hg;H.ga+=m.ag;A.gf+=m.ag;A.ga+=m.hg;
+    if(m.hg>m.ag){H.w++;A.l++;H.pts+=3;H.form.push('W');A.form.push('L')}
+    else if(m.hg<m.ag){A.w++;H.l++;A.pts+=3;A.form.push('W');H.form.push('L')}
+    else{H.d++;A.d++;H.pts++;A.pts++;H.form.push('D');A.form.push('D')}
+  });
+  return Object.values(s).sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf);
+}
+const TABLE = standings();
+
+/* =========================================================
+   PRIKAZ
+   ========================================================= */
+const fmtD=new Intl.DateTimeFormat('hr-HR',{weekday:'short',day:'numeric',month:'numeric',timeZone:'Europe/Zagreb'});
+const fmtT=new Intl.DateTimeFormat('hr-HR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zagreb'});
+const fmtL=new Intl.DateTimeFormat('hr-HR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zagreb'});
+const $=s=>document.querySelector(s);
+const state={tab:'home',res:{round:PLAYED_ROUNDS,club:'ALL'},fix:{round:PLAYED_ROUNDS+1,club:'DIN'},open:null};
+
+const _h=location.hash.slice(1);
+if(['home','results','table','fixtures','news'].includes(_h)) state.tab=_h;
+const ICON={
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
+  results:'<circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 5h-5L8 10z"/>',
+  table:'<path d="M4 6h16M4 12h16M4 18h16"/><path d="M8 4v16" />',
+  fixtures:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+  news:'<path d="M5 5h11a2 2 0 012 2v12H7a2 2 0 01-2-2z"/><path d="M18 9h2v9a2 2 0 01-2 2M8 9h6M8 13h6"/>'
+};
+const TABS=[['home','Početna'],['results','Rezultati'],['table','Tablica'],['fixtures','Raspored'],['news','Vijesti']];
+
+const crest=id=>`<span class="crest" style="--c:${T[id].color}" aria-hidden="true">${T[id].short}${T[id].logo?`<img src="${T[id].logo}" alt="" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">`:''}</span>`;
+const tname=id=>`<span class="n-full">${T[id].name}</span><span class="n-short">${T[id].short}</span>`;
+
+function matchRow(m){
+  const played=m.hg!=null, din=m.h==='DIN'||m.a==='DIN';
+  const mid=played?`<span class="score" aria-label="${m.hg} prema ${m.ag}">${m.hg}<i>:</i>${m.ag}</span>`:`<span class="ko">${fmtT.format(m.ts)}</span>`;
+  return `<li class="match${din?' is-din':''}"><span class="side home">${tname(m.h)}${crest(m.h)}</span><span class="mid">${mid}</span><span class="side away">${crest(m.a)}${tname(m.a)}</span></li>`;
+}
+function byDay(ms){
+  const g=new Map(); ms.forEach(m=>{const k=fmtD.format(m.ts);(g.get(k)||g.set(k,[]).get(k)).push(m)});
+  return [...g].map(([k,a])=>`<h4 class="day">${k}</h4><ul class="matches">${a.map(matchRow).join('')}</ul>`).join('');
+}
+function byRound(ms){
+  const g=new Map(); ms.forEach(m=>{(g.get(m.round)||g.set(m.round,[]).get(m.round)).push(m)});
+  return [...g].map(([r,a])=>`<h4 class="day">${r}. kolo · ${fmtD.format(a[0].ts)}, ${fmtT.format(a[0].ts)}</h4><ul class="matches">${a.map(matchRow).join('')}</ul>`).join('');
+}
+function controls(kind,st,min,max){
+  const opts='<option value="ALL">Svi klubovi</option>'+TEAMS.map(t=>`<option value="${t.id}"${st.club===t.id?' selected':''}>${t.name}</option>`).join('');
+  const nav=st.club==='ALL'?`<div class="roundnav"><button data-act="round" data-kind="${kind}" data-d="-1" aria-label="Prethodno kolo"${st.round<=min?' disabled':''}>‹</button><strong>${st.round}. kolo</strong><button data-act="round" data-kind="${kind}" data-d="1" aria-label="Sljedeće kolo"${st.round>=max?' disabled':''}>›</button></div>`:'';
+  return `<div class="controls">${nav}<label><span class="sr">Odaberi klub</span><select data-act="club" data-kind="${kind}">${opts}</select></label></div>`;
+}
+
+/* ---- Početna ---- */
+function heroHTML(){
+  const m=NEXT_DIN, home=T[m.h], away=T[m.a], d=TABLE.find(x=>x.id==='DIN'), pos=TABLE.indexOf(d)+1;
+  return `<section class="hero" style="margin:0"><svg class="pitch" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke="#fff" stroke-width="2"><rect x="12" y="12" width="376" height="236"/><line x1="200" y1="12" x2="200" y2="248"/><circle cx="200" cy="130" r="42"/><rect x="12" y="80" width="56" height="100"/><rect x="332" y="80" width="56" height="100"/></svg>
+  <div class="wrap"><p class="lead">${TEXT.heroLead} · ${m.round}. kolo</p>
+  <div class="hero-crests">${crest(m.h)}${crest(m.a)}</div>
+  <h2><span>${home.nick}</span><span class="vs">protiv</span><span>${away.nick}</span></h2>
+  <p class="when">${fmtL.format(m.ts)}</p><p class="where">${home.stadium}</p>
+  <div class="cd" id="cd" role="timer" aria-label="Odbrojavanje do početka utakmice"></div>
+  <div class="standing"><div><b>${pos}.</b><span>mjesto</span></div><div><b>${d.pts}</b><span>bodova</span></div><div><b>${d.w}-${d.d}-${d.l}</b><span>pobjede-neriješeno-porazi</span></div><div><b>${d.gf}:${d.ga}</b><span>golovi</span></div></div></div></section>`;
+}
+function homeHTML(){
+const din=[...PLAYED].filter(m=>m.h==='DIN'||m.a==='DIN').sort((a,b)=>b.ts-a.ts).slice(0,5);
+const chips=din.map(m=>{
+const home=m.h==='DIN',opp=home?m.a:m.h,g=home?m.hg:m.ag,c=home?m.ag:m.hg,r=g>c?'W':g<c?'L':'D';
+return `<div class="chip ${r}"><b>${g}:${c}</b><span>${home?'protiv':'kod'} ${T[opp].short}</span></div>`;
+}).join('');
+const r=PLAYED_ROUNDS+1;
+return `<section><h3 class="forma-head" id="formaHead" role="button" tabindex="0" aria-expanded="false">Forma Dinama</h3><div class="form" aria-label="Zadnjih pet utakmica">${chips}</div><div id="statsPanel" class="stats-panel"></div></section>
+<section><div class="row-head"><h3>Sljedeće utakmice · ${r}. kolo</h3><button class="link" data-act="tab" data-tab="fixtures">Cijeli raspored</button></div>${byDay(ROUNDS[r-1])}</section>
+<section><div class="row-head"><h3>Zadnji rezultati</h3><button class="link" data-act="tab" data-tab="results">Svi rezultati</button></div>${byDay(ROUNDS[PLAYED_ROUNDS-1])}</section>
+<section><div class="row-head"><h3>Vijesti</h3><button class="link" data-act="tab" data-tab="news">Sve vijesti</button></div>${newsHTML(3)}</section>`;
+}
+
+/* ---- Rezultati / Raspored ---- */
+function resultsHTML(){
+  const st=state.res;
+  const list=st.club==='ALL'?byDay(ROUNDS[st.round-1]):byRound(PLAYED.filter(m=>m.h===st.club||m.a===st.club).sort((a,b)=>b.ts-a.ts));
+  return `<section><h3>Rezultati</h3>${controls('res',st,1,PLAYED_ROUNDS)}${list}</section>`;
+}
+function fixturesHTML(){
+  const st=state.fix, min=PLAYED_ROUNDS+1, max=ROUNDS.length;
+  const list=st.club==='ALL'?byDay(ROUNDS[st.round-1]):byRound(ALL.filter(m=>m.hg==null&&(m.h===st.club||m.a===st.club)));
+  return `<section><h3>Raspored utakmica</h3><p class="sub">Svih deset klubova · ${max} kola</p>${controls('fix',st,min,max)}${list}</section>`;
+}
+
+/* ---- Tablica ---- */
+function zone(i){return i===0?'var(--zone-champ)':i<3?'var(--zone-eu)':i===8?'var(--zone-play)':i===9?'var(--zone-rel)':'transparent'}
+function tableHTML(){
+  const rows=TABLE.map((r,i)=>`<tr class="${r.id==='DIN'?'din':''}"><td class="pos" style="--z:${zone(i)}">${i+1}</td><td class="l club"><span class="in">${crest(r.id)}<span>${T[r.id].name}</span></span></td><td>${r.p}</td><td class="hide-s">${r.w}</td><td class="hide-s">${r.d}</td><td class="hide-s">${r.l}</td><td>${r.gf-r.ga>0?'+':''}${r.gf-r.ga}</td><td class="pts">${r.pts}</td><td class="hide-s"><span class="dots" aria-label="Zadnjih 5: ${r.form.slice(-5).join(' ')}">${r.form.slice(-5).map(f=>`<i class="${f}"></i>`).join('')}</span></td></tr>`).join('');
+  return `<section><h3>Tablica</h3><p class="sub">Nakon ${PLAYED_ROUNDS}. kola</p>
+  <div class="tablewrap"><table><thead><tr><th>#</th><th class="l">Klub</th><th title="Odigrano">U</th><th class="hide-s" title="Pobjede">P</th><th class="hide-s" title="Neriješeno">N</th><th class="hide-s" title="Porazi">I</th><th title="Gol-razlika">GR</th><th>Bod</th><th class="hide-s">Forma</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="legend"><span style="--z:var(--zone-champ)">Vrh ljestvice</span><span style="--z:var(--zone-eu)">Europska natjecanja</span><span style="--z:var(--zone-play)">Kvalifikacije za ostanak</span><span style="--z:var(--zone-rel)">Ispadanje</span></div></section>`;
+}
+
+/* ---- Vijesti ---- */
+function newsHTML(n){
+  const items=NEWS.slice(0,n||NEWS.length);
+  return `<div class="news">${items.map((s,i)=>`<article class="card story${i===0?' feat':''}${state.open===s.title?' open':''}" tabindex="0" role="button" aria-expanded="${state.open===s.title}" data-act="story" data-t="${s.title}">${s.img?`<img src="${s.img}" alt="" loading="lazy" onerror="this.remove()">`:''}<div class="body"><span class="cat">${s.cat}</span><h5>${s.title}</h5><time>${s.time}</time><p>${s.body}</p></div></article>`).join('')}</div>`;
+}
+function newsPage(){return `<section><h3>Vijesti</h3><p class="demo">${TEXT.newsNote}</p>${newsHTML()}</section>`;}
+function ringSVG(pct,color,label,num){
+const r=42,c=2*Math.PI*r,off=c-(pct/100)*c;
+return `<div class="ring"><div class="ring-wrap"><svg viewBox="0 0 96 96"><circle class="track" cx="48" cy="48" r="${r}"/><circle class="val" cx="48" cy="48" r="${r}" stroke="${color}" stroke-dasharray="${c}" stroke-dashoffset="${off}"/></svg><div class="ring-num">${num}</div></div><div class="lbl">${label}</div></div>`;
+}
+function radarSVG(stats){
+const labels=[['Napad','attack'],['Obrana','defense'],['Posjed','possession'],['Forma','form'],['Kondicija','fitness']];
+const cx=140,cy=130,maxR=90,n=5;
+const pt=(i,r)=>{const a=(Math.PI*2*i/n)-Math.PI/2;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+let grids='';
+[0.33,0.66,1].forEach(f=>{const pts=[...Array(n)].map((_,i)=>pt(i,maxR*f).join(',')).join(' ');grids+=`<polygon class="grid" points="${pts}"/>`;});
+let axes='';labels.forEach((_,i)=>{const [x,y]=pt(i,maxR);axes+=`<line class="axis" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`;});
+const dataPts=labels.map(([,key],i)=>pt(i,maxR*(Math.min(100,Math.max(0,stats[key]||0))/100)));
+const shape=dataPts.map(p=>p.join(',')).join(' ');
+const dots=dataPts.map(p=>`<circle class="pt" cx="${p[0]}" cy="${p[1]}" r="3.5"/>`).join('');
+const lbls=labels.map(([lbl],i)=>{const [x,y]=pt(i,maxR+18);return `<text class="lbl" x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle">${lbl}</text>`;}).join('');
+return `<div class="radar"><p class="radar-title">Statistika kluba</p><svg viewBox="0 0 280 260">${grids}${axes}<polygon class="shape" points="${shape}"/>${dots}${lbls}</svg></div>`;
+}
+function statsPanelHTML(){
+const d=TABLE.find(x=>x.id==='DIN');
+const winPct=Math.round(100*d.w/d.p),drawPct=Math.round(100*d.d/d.p),lossPct=Math.round(100*d.l/d.p);
+const rings=`<div class="rings">${ringSVG(winPct,'var(--win)','Pobjede',winPct+'%')}${ringSVG(drawPct,'var(--draw)','Neriješeno',drawPct+'%')}${ringSVG(lossPct,'var(--loss)','Porazi',lossPct+'%')}</div>`;
+const stats=(window.CLUB_STATS)||{attack:75,defense:70,possession:60,form:80,fitness:65};
+return rings+radarSVG(stats);
+}
+/* ---- Render ---- */
+function render(){
+  $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-act="tab" data-tab="${k}"${state.tab===k?' aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>${l}</button>`).join('');
+  $('#heroSlot').innerHTML=state.tab==='home'?heroHTML():'';
+  $('#main').innerHTML={home:homeHTML,results:resultsHTML,table:tableHTML,fixtures:fixturesHTML,news:newsPage}[state.tab]();
+  tick();
+}
+function tick(){
+  const el=$('#cd'); if(!el) return;
+  const diff=NEXT_DIN.ts-Date.now();
+  if(diff<=0){el.outerHTML='<p class="live" id="cd">Utakmica je počela ili je završena.</p>';return;}
+  const s=Math.floor(diff/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),c=s%60;
+  const p=n=>String(n).padStart(2,'0');
+  el.innerHTML=`<div><b>${d}</b><span>dana</span></div><div><b>${p(h)}</b><span>sati</span></div><div><b>${p(m)}</b><span>min</span></div><div><b>${p(c)}</b><span>sek</span></div>`;
+}
+setInterval(tick,1000);
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]'); if(!t) return;
+  const a=t.dataset.act;
+  if(a==='tab'){state.tab=t.dataset.tab;try{history.replaceState(null,'','#'+state.tab)}catch(_){}render();window.scrollTo({top:0})}
+  else if(a==='round'){const st=state[t.dataset.kind],lim=t.dataset.kind==='res'?[1,PLAYED_ROUNDS]:[PLAYED_ROUNDS+1,ROUNDS.length];st.round=Math.min(lim[1],Math.max(lim[0],st.round+ +t.dataset.d));render()}
+  else if(a==='story'){state.open=state.open===t.dataset.t?null:t.dataset.t;render()}
+});document.addEventListener('click',e=>{
+const h=e.target.closest('#formaHead'); if(!h) return;
+const open=h.classList.toggle('open');
+h.setAttribute('aria-expanded',open);
+const p=document.getElementById('statsPanel');
+p.classList.toggle('open',open);
+if(open) p.innerHTML=statsPanelHTML();
+});
+document.addEventListener('change',e=>{
+  const t=e.target.closest('[data-act="club"]'); if(!t) return;
+  state[t.dataset.kind].club=t.value; render();
+});
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-act="story"]')){e.preventDefault();e.target.click()}
+});
+document.getElementById('brandTxt').innerHTML=TEXT.brandName+' <small>'+TEXT.brandSub+'</small>';
+document.getElementById('foot').textContent=TEXT.footer;
+render();
+
+/* =========================================================
+   PWA: servisni radnik, instalacija, izvan mreže
+   ========================================================= */
+function toast(msg,ms){
+  const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),ms||3500);
+}
+if('serviceWorker' in navigator){
+  const hadController=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(!hadController||reloaded) return; reloaded=true; toast('Nova verzija je spremna.',1500); setTimeout(()=>location.reload(),1200);
+  });
+}
+window.addEventListener('offline',()=>toast('Nema interneta. Prikazuju se spremljeni podaci.',4500));
+window.addEventListener('online',()=>toast('Ponovno ste na mreži.',2500));
+
+const isStandalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+let deferred=null;
+const dismissed=()=>{try{return localStorage.getItem('installDismissed')==='1'}catch(_){return false}};
+function showInstall(kind){
+  if(isStandalone||dismissed()||document.querySelector('.install')) return;
+  const b=document.createElement('div');b.className='install';b.setAttribute('role','dialog');b.setAttribute('aria-label','Instalacija aplikacije');
+  b.innerHTML=`<img class="mark" src="icons/icon-192.png" alt=""><p><b>Instaliraj aplikaciju</b>${kind==='ios'?'Dodirnite Podijeli, zatim "Dodaj na početni zaslon".':'Brži pristup i rad bez interneta.'}</p>${kind==='ios'?'':'<button class="go">Instaliraj</button>'}<button class="x" aria-label="Zatvori">✕</button>`;
+  document.body.appendChild(b);
+  b.querySelector('.x').onclick=()=>{try{localStorage.setItem('installDismissed','1')}catch(_){}b.remove()};
+  const go=b.querySelector('.go');
+  if(go) go.onclick=async()=>{ if(!deferred) return; deferred.prompt(); await deferred.userChoice; deferred=null; b.remove(); };
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;setTimeout(()=>showInstall('native'),4000)});
+window.addEventListener('appinstalled',()=>{document.querySelector('.install')?.remove();toast('Aplikacija je instalirana.')});
+if(isIOS&&!isStandalone) setTimeout(()=>showInstall('ios'),5000);
+})();
+</script>
+</body>
+</html>
