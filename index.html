@@ -443,14 +443,7 @@ document.addEventListener('click',e=>{
   else if(a==='round'){const st=state[t.dataset.kind],lim=t.dataset.kind==='res'?[1,PLAYED_ROUNDS]:[PLAYED_ROUNDS+1,ROUNDS.length];st.round=Math.min(lim[1],Math.max(lim[0],st.round+ +t.dataset.d));render()}
   else if(a==='story'){state.open=state.open===t.dataset.t?null:t.dataset.t;render()}
 });document.addEventListener('click',e=>{
-const h=e.target.closest('#formaHead');document.addEventListener('click',e=>{
-const cm=e.target.closest('[data-act="match"]');
-if(cm){const m=findMatch(cm.dataset.r,cm.dataset.h,cm.dataset.a); if(m) showMatchModal(m); return;}
-if(e.target.closest('[data-act="closeModal"]')) closeMatchModal();
-});
-document.addEventListener('keydown',e=>{
-if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-act="match"]')){e.preventDefault();e.target.click()}
-}); if(!h) return;
+const h=e.target.closest('#formaHead');if(!h) return;
 const open=h.classList.toggle('open');
 h.setAttribute('aria-expanded',open);
 const p=document.getElementById('statsPanel');
