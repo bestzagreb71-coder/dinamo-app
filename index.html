@@ -382,8 +382,17 @@ const ROUNDS = buildRounds().map((pairs,ri)=>{
     const m={round:ri+1,h:p.h,a:p.a,ts:BASE+ri*7*864e5+SLOTS[si]};
     if(ri<PLAYED_ROUNDS){[m.hg,m.ag]=simulate(p.h,p.a);}
     return m;
+    });
   });
-});
+
+  ROUNDS.forEach(rd=>rd.forEach(m=>{
+    if(m.round===9 && m.h==='DIN' && m.a==='HAJ'){
+      [m.h,m.a]=[m.a,m.h];
+      if(m.hg!=null)[m.hg,m.ag]=[m.ag,m.hg];
+    }
+  }));
+
+  
 const ALL = ROUNDS.flat();
 const PLAYED = ALL.filter(m=>m.hg!=null);
 const NEXT_DIN = ALL.find(m=>m.hg==null&&(m.h==='DIN'||m.a==='DIN'));
