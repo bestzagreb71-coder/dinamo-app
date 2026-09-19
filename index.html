@@ -172,26 +172,7 @@ html,body{overscroll-behavior-y:none}
 .crest{position:relative;overflow:hidden}
 .crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0}
 .crest.has-img{background:none;color:transparent;overflow:visible}
-.crest.has-img img{opacity:1}.forma-head{cursor:pointer;user-select:none}
-.forma-head::after{content:'▸';display:inline-block;margin-left:6px;transition:transform .2s;color:var(--blue)}
-.forma-head.open::after{transform:rotate(90deg)}
-.stats-panel{display:none;margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
-.stats-panel.open{display:block}
-.rings{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
-.ring{width:96px;text-align:center}
-.ring svg{transform:rotate(-90deg);width:96px;height:96px}
-.ring .track{fill:none;stroke:var(--line);stroke-width:10}
-.ring .val{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray .6s ease}
-.ring-wrap{position:relative;width:96px;height:96px}
-.ring-num{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:22px}
-.ring .lbl{margin-top:6px;font-size:12px;color:var(--muted);font-weight:600}
-.radar-title{font-family:var(--display);font-weight:800;font-size:18px;margin:4px 0 10px;text-align:center}
-.radar svg{width:100%;max-width:280px;display:block;margin:0 auto}
-.radar .grid{fill:none;stroke:var(--line);stroke-width:1}
-.radar .axis{stroke:var(--line);stroke-width:1}
-.radar .shape{fill:var(--blue);fill-opacity:.25;stroke:var(--blue);stroke-width:2}
-.radar .pt{fill:var(--blue)}
-.radar .lbl{font-size:11px;font-weight:700;fill:var(--muted)}
+.crest.has-img img{opacity:1}
 .hero-crests{display:flex;gap:14px;margin:12px 0 2px}
 .hero-crests .crest{width:60px;height:60px;font-size:18px}
 </style>
@@ -273,7 +254,7 @@ const fmtD=new Intl.DateTimeFormat('hr-HR',{weekday:'short',day:'numeric',month:
 const fmtT=new Intl.DateTimeFormat('hr-HR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zagreb'});
 const fmtL=new Intl.DateTimeFormat('hr-HR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zagreb'});
 const $=s=>document.querySelector(s);
-const state={tab:'home',res:{round:PLAYED_ROUNDS,club:'ALL'},fix:{round:PLAYED_ROUNDS+1,club:'DIN'},open:null};
+const state={tab:'home',res:{round:PLAYED_ROUNDS,club:'ALL'},fix:{round:PLAYED_ROUNDS+1,club:'ALL'},open:null};
 
 const _h=location.hash.slice(1);
 if(['home','results','table','fixtures','news'].includes(_h)) state.tab=_h;
@@ -320,16 +301,16 @@ function heroHTML(){
   <div class="standing"><div><b>${pos}.</b><span>mjesto</span></div><div><b>${d.pts}</b><span>bodova</span></div><div><b>${d.w}-${d.d}-${d.l}</b><span>pobjede-neriješeno-porazi</span></div><div><b>${d.gf}:${d.ga}</b><span>golovi</span></div></div></div></section>`;
 }
 function homeHTML(){
-const din=[...PLAYED].filter(m=>m.h==='DIN'||m.a==='DIN').sort((a,b)=>b.ts-a.ts).slice(0,5);
-const chips=din.map(m=>{
-const home=m.h==='DIN',opp=home?m.a:m.h,g=home?m.hg:m.ag,c=home?m.ag:m.hg,r=g>c?'W':g<c?'L':'D';
-return `<div class="chip ${r}"><b>${g}:${c}</b><span>${home?'protiv':'kod'} ${T[opp].short}</span></div>`;
-}).join('');
-const r=PLAYED_ROUNDS+1;
-return `<section><h3 class="forma-head" id="formaHead" role="button" tabindex="0" aria-expanded="false">Forma Dinama</h3><div class="form" aria-label="Zadnjih pet utakmica">${chips}</div><div id="statsPanel" class="stats-panel"></div></section>
-<section><div class="row-head"><h3>Sljedeće utakmice · ${r}. kolo</h3><button class="link" data-act="tab" data-tab="fixtures">Cijeli raspored</button></div>${byDay(ROUNDS[r-1])}</section>
-<section><div class="row-head"><h3>Zadnji rezultati</h3><button class="link" data-act="tab" data-tab="results">Svi rezultati</button></div>${byDay(ROUNDS[PLAYED_ROUNDS-1])}</section>
-<section><div class="row-head"><h3>Vijesti</h3><button class="link" data-act="tab" data-tab="news">Sve vijesti</button></div>${newsHTML(3)}</section>`;
+  const din=[...PLAYED].filter(m=>m.h==='DIN'||m.a==='DIN').sort((a,b)=>b.ts-a.ts).slice(0,5);
+  const chips=din.map(m=>{
+    const home=m.h==='DIN',opp=home?m.a:m.h,g=home?m.hg:m.ag,c=home?m.ag:m.hg,r=g>c?'W':g<c?'L':'D';
+    return `<div class="chip ${r}"><b>${g}:${c}</b><span>${home?'protiv':'kod'} ${T[opp].short}</span></div>`;
+  }).join('');
+  const r=PLAYED_ROUNDS+1;
+  return `<section><h3>Forma Dinama</h3><div class="form" aria-label="Zadnjih pet utakmica">${chips}</div></section>
+  <section><div class="row-head"><h3>Sljedeće utakmice · ${r}. kolo</h3><button class="link" data-act="tab" data-tab="fixtures">Cijeli raspored</button></div>${byDay(ROUNDS[r-1])}</section>
+  <section><div class="row-head"><h3>Zadnji rezultati</h3><button class="link" data-act="tab" data-tab="results">Svi rezultati</button></div>${byDay(ROUNDS[PLAYED_ROUNDS-1])}</section>
+  <section><div class="row-head"><h3>Vijesti</h3><button class="link" data-act="tab" data-tab="news">Sve vijesti</button></div>${newsHTML(3)}</section>`;
 }
 
 /* ---- Rezultati / Raspored ---- */
@@ -359,30 +340,7 @@ function newsHTML(n){
   return `<div class="news">${items.map((s,i)=>`<article class="card story${i===0?' feat':''}${state.open===s.title?' open':''}" tabindex="0" role="button" aria-expanded="${state.open===s.title}" data-act="story" data-t="${s.title}">${s.img?`<img src="${s.img}" alt="" loading="lazy" onerror="this.remove()">`:''}<div class="body"><span class="cat">${s.cat}</span><h5>${s.title}</h5><time>${s.time}</time><p>${s.body}</p></div></article>`).join('')}</div>`;
 }
 function newsPage(){return `<section><h3>Vijesti</h3><p class="demo">${TEXT.newsNote}</p>${newsHTML()}</section>`;}
-function ringSVG(pct,color,label,num){
-const r=42,c=2*Math.PI*r,off=c-(pct/100)*c;
-return `<div class="ring"><div class="ring-wrap"><svg viewBox="0 0 96 96"><circle class="track" cx="48" cy="48" r="${r}"/><circle class="val" cx="48" cy="48" r="${r}" stroke="${color}" stroke-dasharray="${c}" stroke-dashoffset="${off}"/></svg><div class="ring-num">${num}</div></div><div class="lbl">${label}</div></div>`;
-}
-function radarSVG(stats){
-const labels=[['Napad','attack'],['Obrana','defense'],['Posjed','possession'],['Forma','form'],['Kondicija','fitness']];
-const cx=140,cy=130,maxR=90,n=5;
-const pt=(i,r)=>{const a=(Math.PI*2*i/n)-Math.PI/2;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
-let grids='';
-[0.33,0.66,1].forEach(f=>{const pts=[...Array(n)].map((_,i)=>pt(i,maxR*f).join(',')).join(' ');grids+=`<polygon class="grid" points="${pts}"/>`;});
-let axes='';labels.forEach((_,i)=>{const [x,y]=pt(i,maxR);axes+=`<line class="axis" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`;});
-const dataPts=labels.map(([,key],i)=>pt(i,maxR*(Math.min(100,Math.max(0,stats[key]||0))/100)));
-const shape=dataPts.map(p=>p.join(',')).join(' ');
-const dots=dataPts.map(p=>`<circle class="pt" cx="${p[0]}" cy="${p[1]}" r="3.5"/>`).join('');
-const lbls=labels.map(([lbl],i)=>{const [x,y]=pt(i,maxR+18);return `<text class="lbl" x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle">${lbl}</text>`;}).join('');
-return `<div class="radar"><p class="radar-title">Statistika kluba</p><svg viewBox="0 0 280 260">${grids}${axes}<polygon class="shape" points="${shape}"/>${dots}${lbls}</svg></div>`;
-}
-function statsPanelHTML(){
-const d=TABLE.find(x=>x.id==='DIN');
-const winPct=Math.round(100*d.w/d.p),drawPct=Math.round(100*d.d/d.p),lossPct=Math.round(100*d.l/d.p);
-const rings=`<div class="rings">${ringSVG(winPct,'var(--win)','Pobjede',winPct+'%')}${ringSVG(drawPct,'var(--draw)','Neriješeno',drawPct+'%')}${ringSVG(lossPct,'var(--loss)','Porazi',lossPct+'%')}</div>`;
-const stats=(window.CLUB_STATS)||{attack:75,defense:70,possession:60,form:80,fitness:65};
-return rings+radarSVG(stats);
-}
+
 /* ---- Render ---- */
 function render(){
   $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-act="tab" data-tab="${k}"${state.tab===k?' aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>${l}</button>`).join('');
@@ -406,13 +364,6 @@ document.addEventListener('click',e=>{
   if(a==='tab'){state.tab=t.dataset.tab;try{history.replaceState(null,'','#'+state.tab)}catch(_){}render();window.scrollTo({top:0})}
   else if(a==='round'){const st=state[t.dataset.kind],lim=t.dataset.kind==='res'?[1,PLAYED_ROUNDS]:[PLAYED_ROUNDS+1,ROUNDS.length];st.round=Math.min(lim[1],Math.max(lim[0],st.round+ +t.dataset.d));render()}
   else if(a==='story'){state.open=state.open===t.dataset.t?null:t.dataset.t;render()}
-});document.addEventListener('click',e=>{
-const h=e.target.closest('#formaHead'); if(!h) return;
-const open=h.classList.toggle('open');
-h.setAttribute('aria-expanded',open);
-const p=document.getElementById('statsPanel');
-p.classList.toggle('open',open);
-if(open) p.innerHTML=statsPanelHTML();
 });
 document.addEventListener('change',e=>{
   const t=e.target.closest('[data-act="club"]'); if(!t) return;
