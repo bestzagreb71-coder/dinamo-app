@@ -1,6 +1,6 @@
 //* Service worker: network-first (uvijek svježi kod i podaci), cache samo kao rezerva izvan mreže.
    Kad god želiš prisiliti sve korisnike na nove datoteke, promijeni broj verzije ispod. */
-const VERSION = 'v7';
+const VERSION = 'v8';
 const CACHE = 'dinamo-' + VERSION;
 
 const PRECACHE = [
