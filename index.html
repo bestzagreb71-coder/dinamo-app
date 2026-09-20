@@ -393,9 +393,7 @@ const ROUNDS = buildRounds().map((pairs,ri)=>{
   if(m.round===10 && m.h==='DIN' && m.a==='LOK'){
     [m.h,m.a]=[m.a,m.h];
     if(m.hg!=null)[m.hg,m.ag]=[m.ag,m.hg];
-  }if(m.h==='DIN' && m.a==='LOK'){
-    m.h='DIN'; m.a='LOK';
-    m.ts = new Date('2026-09-20T20:00:00+02:00').getTime();
+  }
   }
 }));
 }));
