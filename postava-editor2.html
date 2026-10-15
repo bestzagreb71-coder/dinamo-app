@@ -353,6 +353,69 @@ $("#closeM").onclick = ()=>{ $("#modal").style.display = "none"; };
 
 /* ===== start ===== */
 fillForm(); buildRows(); updateU(); render();
+<script>
+(function(){
+  var KEY='postava_save_v1', data={};
+  try{ data=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){}
+  function persist(){
+    try{ localStorage.setItem(KEY,JSON.stringify(data)); }
+    catch(e){ alert('Memorija puna – slika je prevelika'); }
+  }
+  function all(){ return [].slice.call(document.querySelectorAll('input,select,textarea')); }
+  function keyOf(el){ return el.id || el.name || ('i'+all().indexOf(el)); }
+
+  function shrink(file, cb){
+    var r=new FileReader();
+    r.onload=function(){
+      var im=new Image();
+      im.onload=function(){
+        var s=Math.min(1,1000/Math.max(im.width,im.height));
+        var c=document.createElement('canvas');
+        c.width=im.width*s; c.height=im.height*s;
+        c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+        cb(c.toDataURL(file.type==='image/png'?'image/png':'image/jpeg',0.85));
+      };
+      im.src=r.result;
+    };
+    r.readAsDataURL(file);
+  }
+
+  function onChange(e){
+    var el=e.target;
+    if(!el.matches||!el.matches('input,select,textarea')) return;
+    var k=keyOf(el);
+    if(el.type==='file'){
+      if(el.files[0]) shrink(el.files[0],function(u){ data[k]={f:u}; persist(); });
+    } else if(el.type==='checkbox'||el.type==='radio'){
+      data[k]={c:el.checked}; persist();
+    } else {
+      data[k]={v:el.value}; persist();
+    }
+  }
+  document.addEventListener('input',onChange);
+  document.addEventListener('change',onChange);
+
+  function restore(){
+    all().forEach(function(el){
+      var d=data[keyOf(el)]; if(!d) return;
+      if(d.f){
+        fetch(d.f).then(function(r){return r.blob();}).then(function(b){
+          var dt=new DataTransfer();
+          dt.items.add(new File([b],'slika',{type:b.type}));
+          el.files=dt.files;
+          el.dispatchEvent(new Event('change',{bubbles:true}));
+        });
+      } else if('c' in d){
+        el.checked=d.c; el.dispatchEvent(new Event('change',{bubbles:true}));
+      } else if('v' in d){
+        el.value=d.v;
+        el.dispatchEvent(new Event('input',{bubbles:true}));
+        el.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+    });
+  }
+  window.addEventListener('load',function(){ setTimeout(restore,300); });
+})();
 </script>
 </body>
 </html>
