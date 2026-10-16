@@ -178,9 +178,9 @@ const DEFAULT = {
   pos: {}
 };
 
-let S = load() || clone(DEFAULT);
-let imgs = { bg: PHOTO, L: "", R: EMBLEM_URI, F: "" };
-let sel = null;
+let S = load();
+if(!S || typeof S!=="object" || !Array.isArray(S.players) || S.players.length!==11 || !FORMATIONS.includes(S.formation) || !S.pos || typeof S.pos!=="object"){ S = clone(DEFAULT); }
+else { S = Object.assign(clone(DEFAULT), S); }
 
 const $ = s => document.querySelector(s);
 const card = $("#card"), pitch = $("#pitch"), playersEl = $("#players");
