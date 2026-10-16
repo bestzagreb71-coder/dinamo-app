@@ -306,8 +306,7 @@ readFile("#fBg","bg"); readFile("#fL","L"); readFile("#fR","R"); readFile("#fF",
 $("#clrL").onclick = ()=>{ imgs.L=""; render(); saveImgs(); };
 $("#clrR").onclick = ()=>{ imgs.R=""; render(); saveImgs(); };
 $("#clrF").onclick = ()=>{ imgs.F=""; render(); saveImgs(); };
-$("#resetAll").onclick = ()=>{ S = clone(DEFAULT); imgs = {bg:PHOTO,L:"",R:EMBLEM_URI,F:""}; fillForm(); buildRows(); render(); save(); }; saveImgs(); };
-
+$("#resetAll").onclick = ()=>{ S = clone(DEFAULT); imgs = {bg:PHOTO,L:"",R:EMBLEM_URI,F:""}; fillForm(); buildRows(); render(); save(); saveImgs(); };
 /* ===== povlačenje igrača ===== */
 let drag = null;
 pitch.addEventListener("pointerdown", e=>{
