@@ -183,6 +183,31 @@ if(!S || typeof S!=="object" || !Array.isArray(S.players) || S.players.length!==
 else { S = Object.assign(clone(DEFAULT), S); }
 let imgs = { bg: PHOTO, L: "", R: EMBLEM_URI, F: "" };
 let sel = null;
+const IMG_DEF = { bg: PHOTO, L: "", R: EMBLEM_URI, F: "" };
+const IMG_KEY = "postava-editor-img-v2";
+try{
+  const si = JSON.parse(localStorage.getItem(IMG_KEY) || "{}");
+  ["bg","L","R","F"].forEach(k=>{ if(si && typeof si[k]==="string") imgs[k] = si[k]; });
+}catch(e){}
+function saveImgs(){
+  const o = {};
+  ["bg","L","R","F"].forEach(k=>{ if(imgs[k] !== IMG_DEF[k]) o[k] = imgs[k]; });
+  try{ localStorage.setItem(IMG_KEY, JSON.stringify(o)); }
+  catch(e){ alert("Slika je prevelika za pamćenje u pregledniku. Vrijedi do zatvaranja stranice."); }
+}
+function shrinkImg(dataUrl, maxPx, cb){
+  const im = new Image();
+  im.onload = ()=>{
+    const k = Math.min(1, maxPx / Math.max(im.width, im.height));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(im.width*k)); c.height = Math.max(1, Math.round(im.height*k));
+    c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+    const png = /^data:image\/(png|svg|gif|webp)/.test(dataUrl);
+    cb(c.toDataURL(png ? "image/png" : "image/jpeg", 0.85));
+  };
+  im.onerror = ()=> cb(dataUrl);
+  im.src = dataUrl;
+}
 
 const $ = s => document.querySelector(s);
 const card = $("#card"), pitch = $("#pitch"), playersEl = $("#players");
@@ -274,14 +299,14 @@ $("#accent").addEventListener("input", e=>{ S.accent=e.target.value; render(); s
 function readFile(inputId, key){
   $(inputId).addEventListener("change", e=>{
     const f = e.target.files[0]; if(!f) return;
-    const r = new FileReader(); r.onload = ()=>{ imgs[key]=r.result; render(); }; r.readAsDataURL(f);
+    const r = new FileReader(); r.onload = ()=>{ shrinkImg(r.result, key==="bg" ? 1400 : 500, u=>{ imgs[key]=u; render(); saveImgs(); }); }; r.readAsDataURL(f);
   });
 }
 readFile("#fBg","bg"); readFile("#fL","L"); readFile("#fR","R"); readFile("#fF","F");
-$("#clrL").onclick = ()=>{ imgs.L=""; render(); };
-$("#clrR").onclick = ()=>{ imgs.R=""; render(); };
-$("#clrF").onclick = ()=>{ imgs.F=""; render(); };
-$("#resetAll").onclick = ()=>{ S = clone(DEFAULT); imgs = {bg:PHOTO,L:"",R:EMBLEM_URI,F:""}; fillForm(); buildRows(); render(); save(); };
+$("#clrL").onclick = ()=>{ imgs.L=""; render(); saveImgs(); };
+$("#clrR").onclick = ()=>{ imgs.R=""; render(); saveImgs(); };
+$("#clrF").onclick = ()=>{ imgs.F=""; render(); saveImgs(); };
+$("#resetAll").onclick = ()=>{ S = clone(DEFAULT); imgs = {bg:PHOTO,L:"",R:EMBLEM_URI,F:""}; fillForm(); buildRows(); render(); save(); }; saveImgs(); };
 
 /* ===== povlačenje igrača ===== */
 let drag = null;
