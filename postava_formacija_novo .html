@@ -641,12 +641,12 @@ function drawPitchPlayer(st,i,x,y,s,a,age){
    }
   }
  }
- const size=fitText(name,150,26);
+ const size=fitText(name,156,32);
  ctx.font=F('names','900',size,true);
  const tw=ctx.measureText(name).width;
  ctx.fillStyle=(st==='A')?'rgba(0,0,0,.62)':(st==='B'?'#087dff':'rgba(8,125,255,.96)');
- ctx.beginPath(); ctx.roundRect(-tw/2-12,r+8,tw+24,36,6); ctx.fill();
- ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText(name,0,r+8+27);
+ ctx.beginPath(); ctx.roundRect(-tw/2-8,r+8,tw+16,44,6); ctx.fill();
+ ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText(name,0,r+8+33);
  ctx.restore();
 }
 const _dots={};
