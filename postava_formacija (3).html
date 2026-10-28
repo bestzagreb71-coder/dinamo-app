@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dinamo Lineup Generator — Maksimir / Zagreb W97</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Barlow+Condensed:wght@400;700;900&family=Bebas+Neue&family=Montserrat:wght@400;700;900&family=Oswald:wght@700&family=Playfair+Display:wght@400;700;900&family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0d11;color:#fff;font-family:Arial,Helvetica,sans-serif}
+.app{max-width:980px;margin:auto;padding:14px}
+.panel{background:#171a20;border:1px solid #2a2f38;border-radius:16px;padding:14px;margin-bottom:14px}
+h1{font-size:21px;margin:0 0 12px}
+h2{font-size:15px;margin:16px 0 8px;color:#dfe8f5}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.field label{display:block;font-size:12px;color:#9ca8b8;margin-bottom:5px}
+input,button,select{font:inherit}
+select{width:100%;padding:10px;border-radius:9px;border:1px solid #3a414d;background:#242830;color:#fff}
+input[type=text],input[type=number],input[type=time],input[type=file]{
+ width:100%;padding:10px;border-radius:9px;border:1px solid #3a414d;background:#242830;color:#fff
+}
+.players{display:grid;grid-template-columns:1fr 75px 55px;gap:7px;margin-top:8px}
+.players input{min-width:0}
+.check{display:flex;align-items:center;justify-content:center;background:#242830;border:1px solid #3a414d;border-radius:9px}
+.field input[type=text]{margin-top:6px}
+button{border:0;border-radius:10px;padding:11px 14px;background:#087dff;color:#fff;font-weight:800;cursor:pointer}
+button.secondary{background:#3b414b}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.preview{display:flex;justify-content:center;background:#050608;border-radius:16px;overflow:hidden}
+canvas{width:min(100%,700px);height:auto;display:block}
+.note{font-size:12px;color:#9ca8b8;line-height:1.45;margin-top:8px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.players{grid-template-columns:1fr 65px 50px}}
+.prow{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:start;background:#1f232b;border:1px solid #2a2f38;border-radius:12px;padding:10px}
+.thumb{width:72px;height:72px;border-radius:50%;background:#242830 center top/cover no-repeat;border:2px solid #3a414d;display:flex;align-items:center;justify-content:center;color:#6b7686;font-size:24px}
+.thumb.has{border-color:#087dff}
+.plab{font-weight:800;font-size:14px;margin-bottom:2px}
+.pst{font-size:12px;color:#9ca8b8;margin-bottom:6px}
+.pst.ok{color:#4ade80}
+.prow input{margin-bottom:6px}
+button.small{padding:7px 10px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="panel">
+<h1>GNK Dinamo — LINE UP generator</h1>
+
+<h2>1. Pozadina i zaglavlje</h2>
+<div class="grid">
+  <div class="field"><label>POZADINSKA FOTOGRAFIJA</label><input id="bg" type="file" accept="image/*"></div>
+  <div class="field"><label>NASLOV</label><input id="title" value="LINE UP"></div>
+  <div class="field"><label>GORNJI TEKST</label><input id="club" value="GNK DINAMO ZAGREB"></div>
+  <div class="field"><label>PROTIVNIK</label><input id="opponent" value="NK SLAVEN BELUPO"></div>
+</div>
+
+<h2>2. Utakmica</h2>
+<div class="grid">
+  <div class="field"><label>VRIJEME UTAKMICE</label><input id="time" type="time" value="20:00"></div>
+  <div class="field"><label>MJESTO</label><input id="venue" value="MAKSIMIR"></div>
+  <div class="field"><label>FORMAT</label>
+    <select id="format">
+      <option value="story">Story 1080×1920</option>
+      <option value="post">Objava 1080×1350</option>
+    </select>
+  </div>
+</div>
+
+<h2>3. Igrači — ime / broj / kapetan</h2>
+<div class="players" id="players"></div>
+
+<h2>Slike igrača (najbolje PNG bez pozadine) i pozicija</h2>
+<div class="note">Slika se sprema uz IME igrača i ostaje zauvijek u ovom pregledniku. Čim upišeš isto ime, slika se sama vrati, pa je ne moraš ponovno učitavati. Ako promijeniš ime igrača, kartica odmah pokazuje čija je slika.</div>
+<div class="grid" id="photoBox"></div>
+<div class="actions"><button class="secondary" id="clearPhotos">Obriši sve spremljene slike</button></div>
+
+<h2>3b. Formacija i teren (završni kadar)</h2>
+<div class="grid">
+  <div class="field"><label>FORMACIJA</label><select id="formation"><option>4-3-3</option><option>4-4-2</option><option>4-2-3-1</option><option>4-1-4-1</option><option>4-5-1</option><option>4-3-2-1</option><option>4-1-2-3</option><option>3-5-2</option><option>3-4-3</option><option>5-3-2</option><option>5-4-1</option></select></div>
+  <div class="field"><label>ILI VLASTITA (npr. 4-1-2-3, zbroj mora biti 10)</label><input id="formCustom" type="text" placeholder="ostavi prazno za izbornik"></div>
+  <div class="field"><label>VERZIJA TERENA</label><select id="pitchStyle"><option value="A">A — Klasični zeleni teren</option><option value="B">B — Taktička ploča (plava, s linijama)</option><option value="C">C — Teren sa slikama igrača</option><option value="off">Bez terena (samo popis)</option></select></div>
+  <div class="field"><label>PNG / ZADNJI KADAR POKAZUJE</label><select id="stillView"><option value="pitch">Teren s formacijom</option><option value="roster">Popis igrača</option></select></div>
+</div>
+<div class="note">Redoslijed na terenu prati popis: 1. igrač je golman, zatim redom obrana, sredina, napad, a unutar svake linije slijeva nadesno. Primjer: za 4-3-3 igrači 2–5 su obrana, 6–8 sredina, 9–11 napad.</div>
+
+<h2>4. Donji potpis</h2>
+<div class="grid">
+  <div class="field"><label>DONJI LIJEVI TEKST</label><input id="bottom" value="STADION"></div>
+  <div class="field"><label>ŽIG / LOGO TEKST</label><input id="watermark" value="Zagreb_W97"></div>
+  <div class="field"><label>VLASTITI ŽIG (opcionalno)</label><input id="logoFile" type="file" accept="image/*"></div>
+</div>
+
+<h2>5. Fontovi — svaki tekst posebno</h2>
+<div class="grid" id="fontBox"></div>
+
+<div class="actions">
+<button id="play">▶ PRIKAŽI ANIMACIJU</button>
+<button id="record">⏺ SNIMI VIDEO ZA STORY</button>
+<button id="download" class="secondary">PREUZMI PNG</button>
+<button id="reset" class="secondary">VRATI PRIMJER</button>
+</div>
+<div class="note">
+Animacija traje oko 15 sekundi: crta se spušta od prvog igrača prema dolje, izlazi ime i broj, a desno izlazi velika slika tog igrača s velikim imenom ispod. Kad izađe sljedeće ime, slika se povuče i izlazi slika sljedećeg igrača. Kad klikneš „Snimi video“, ostani na ovoj stranici dok se snimanje ne završi, a video se sam preuzme. Nakon zadnjeg igrača popis i slika nestaju, a na terenu se crta odabrana formacija. PNG prikazuje ono što odabereš pod „PNG / zadnji kadar“.
+</div>
+</div>
+
+<div class="preview"><canvas id="canvas" width="1080" height="1920"></canvas></div>
+</div>
+
+<script>
+const W=1080;
+let H=1920, OFFY=285;            /* OFFY: pomak sadržaja da bude u sigurnoj zoni storyja */
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+let bgImg=null, logoImg=null; const captainImg=new Image();
+const playerImgs=[];
+captainImg.onload=()=>draw();
+captainImg.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAAA4CAMAAAB32H4HAAAA/1BMVEWnFyPNzM8HSJkEO4WwqqUENHHFFSYBAwadYlfFs6tTcYtXZGwqTnOsinnLxLp4JScKSo9uiJwLOngINWikJCu2u8TCvsCSQj2zJyetrq/JWFfY2dsXSIq0TEuzs7PqbWsHTp3/AAC1ZWHa2dy2O0L29vACPYUQRniuKzG9wLvHUlR9gXfHlH7Uya8COHoGP5F0ncWqAFWzQkS8xc7FQEfPoJB/AAB3RT+tN0CneoC/v3+TstLHOT7HMDrLP0TCO0IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABq6Fw5AAAAQHRSTlP8/v3+/v3+BP7//v////7/KP81V7T///8OYf9eXl2QE5kBJJGUEJpPaP9g//8MmSD+A53/rREC//+nCDlvtFnL11zOwwAAA8pJREFUeNqd1Yla4zgMAGDHVlIndlzC9NruFBa2LPfcex/z/m+1kmwnTpq0ndEHtCnWj+QLMWvj5nqz+S28v7u93e12+0+LhUhisdjvd0/X169+/Oa6zRXhFQl+fcX0/V5MRlEU+P31y9PTr/yXbxLmduMr2H0S50Th48sTVeMhZD4y8bAQ3xJe+vc/rIlqEDc3s9fdtxFpScU/f5GD1TyI74mijQ32IzYnKplTrNf8Os4UD7PNSUNrXdN3jT/FfARh5ziy1lCW8bF0UOv5mCM2RxVEsgxaJstcGaGeUpxEEgboKSv1YT3HFU4bMpl7OWzrtNIxdfjA+YLOYFBZHzAvkdm+6PO6muu2h5FqtgBnMbhZMAsAaLPgjuF39FJSOJCyPIOZ/06JcUW0C1XU/nmLimx0z5kohlZ6gmFFSjjJzA1PS8v0JmnbsCIr3WeGJ/MPPEBuktGVUt6B1EkZrXkGcVqycabWNTRNLIfGbvsMCaswGHSf6VY+rHcVyuEEkkSxQCacnaxlsqNMFpmYhdBC/JkazNA2c7zga639VQO0Azg6puoStwtxhYmDajiwSIrHDNZhjii96hgZpwFDiKsSIFFW0KZF1z9riUukZMLAss36WVw5SNishHiG9GPKsIKRMmXKZABJPQkDCRMV2a3UFLNa9Zh4U9Dt0irT1cQ1WGXlKPOoWeHdq04yvhhi9ODS1JqMqsFBVeWOM/hROWQe/a+0VcqCa7fgCPOj+CG2tPrc2zd+89DsstKtZTfFcMAs011cuuTyREWqhp6biktyI/smMMs+k9zBrFAxYGmCXMdU5QGTbMB2FzGzpmRlWKGVajqmSRr1zCo5VEt/NgNDtUiFJwnCdeW6i+KASbrsyiHGKKUCEyakZdKeAuMXc7mkuw0H2dp5hhWMrqmKmuK6wMrmw/Jzxzjso+E/wTl5nhtqErSRgaEpNja84WpUY3LfZrMMDH6MqTnXz1ae13Qlx1owGtqXxlRh8nG+II+nTMoP2Z24zzmUlG0SPtZ8kNrg7efiQgC1lMsk/hZv8uColLF1qnSHAf/1OmTA9BR5EZk0h6cHeoyyhne7sRVGbfKkJ2Zm+bhjB47KrbX8kXweKlOM76saQIpvY/Nsh0rHqAMGG6srO3SsMTxanlWNd6x5Nlb2DGP92Clm1MGKOHBaLL+Jm0OeWU0H5TZS7cAjTHDkGJTEiHG0qXFoFDne1AGjlJpg3p9gEOIvFX9Pt9iRaniAjAd0FJWTxcg7ccnKu18w3r1J4jKJi/eXFz7u79/6uH/7kw9mZv8DFqFL1JgEejQAAAAASUVORK5CYII=";
+
+/* ANIMACIJA: trajanje u milisekundama */
+const STEP=800;                      /* razmak između igrača */
+const ANIM_TOTAL=10*STEP+700;        /* kad je zadnji igrač gotov */
+const HOLD=2500;                     /* koliko se zadržava gotova grafika na kraju */
+let animRunning=false;
+const PITCH_START=ANIM_TOTAL+500;    /* kad popis počinje nestajati i teren izlazi */
+const PITCH_DUR=500+11*130+350+700;  /* trajanje crtanja terena i igrača */
+
+function ease(x){x=Math.max(0,Math.min(1,x));return 1-Math.pow(1-x,3);}
+
+/* VELIKA SLIKA IGRAČA (verzija C): položaj i veličina u području 1080×1350.
+   Slika izlazi preko desnog ruba, lijevo i dolje blijedi. */
+const PHOTO_X=300, PHOTO_Y=45, PHOTO_W=1000, PHOTO_H=900;
+const photoCanvas=document.createElement('canvas');
+photoCanvas.width=PHOTO_W; photoCanvas.height=PHOTO_H;
+const pctx=photoCanvas.getContext('2d');
+
+/* plava svjetlosna zraka iza igrača */
+function drawBeam(){
+ ctx.save();
+ try{ctx.filter='blur(12px)';}catch(e){}
+ const g=ctx.createLinearGradient(0,-90,0,1400);
+ g.addColorStop(0,'rgba(8,125,255,0)');
+ g.addColorStop(.4,'rgba(8,125,255,.35)');
+ g.addColorStop(1,'rgba(8,125,255,0)');
+ ctx.fillStyle=g;
+ ctx.beginPath();
+ ctx.moveTo(670,-90);ctx.lineTo(1030,-90);ctx.lineTo(560,1400);ctx.lineTo(200,1400);ctx.closePath();
+ ctx.fill();
+ ctx.restore();
+}
+
+/* slika igrača: lijevi rub i dno lagano blijede (gradient), crta se ispod imena */
+function drawBigPhoto(img,alpha,dx){
+ pctx.globalCompositeOperation='source-over';
+ pctx.clearRect(0,0,PHOTO_W,PHOTO_H);
+ let s=PHOTO_W/img.width;
+ if(img.height*s>PHOTO_H) s=PHOTO_H/img.height;
+ const dw=img.width*s, dh=img.height*s;
+ pctx.drawImage(img,(PHOTO_W-dw)/2,PHOTO_H-dh,dw,dh);
+ pctx.globalCompositeOperation='destination-out';
+ /* lijevi rub blijedi */
+ const gl=pctx.createLinearGradient(0,0,PHOTO_W*0.38,0);
+ gl.addColorStop(0,'rgba(0,0,0,1)');
+ gl.addColorStop(1,'rgba(0,0,0,0)');
+ pctx.fillStyle=gl;
+ pctx.fillRect(0,0,PHOTO_W,PHOTO_H);
+ /* dno blijedi */
+ const gb=pctx.createLinearGradient(0,PHOTO_H*0.62,0,PHOTO_H*0.98);
+ gb.addColorStop(0,'rgba(0,0,0,0)');
+ gb.addColorStop(1,'rgba(0,0,0,1)');
+ pctx.fillStyle=gb;
+ pctx.fillRect(0,0,PHOTO_W,PHOTO_H);
+ pctx.globalCompositeOperation='source-over';
+ ctx.save();
+ ctx.globalAlpha=alpha;
+ ctx.drawImage(photoCanvas,PHOTO_X+dx,PHOTO_Y);
+ ctx.restore();
+}
+
+/* veliko ime igrača s pozicijom i brojem ispod slike (desno poravnato) */
+function drawTag(i,alpha,dx){
+ const name=document.getElementById('name'+i).value.toUpperCase();
+ const num=document.getElementById('num'+i).value;
+ const posEl=document.getElementById('pos'+i);
+ const pos=posEl?posEl.value.toUpperCase().trim():'';
+ ctx.save();
+ ctx.globalAlpha=alpha;
+ ctx.textAlign="right";
+ const size=fitText(name,600,84);
+ ctx.font=F('names',"900",size,true);
+ ctx.fillStyle="#fff";
+ ctx.fillText(name,1030+dx,855);
+ ctx.font=F('numbers',"700",22);
+ if('letterSpacing' in ctx) ctx.letterSpacing='6px';
+ ctx.fillStyle="#9ec8ff";
+ ctx.fillText((pos?pos+' · ':'')+num,1030+dx,895);
+ if('letterSpacing' in ctx) ctx.letterSpacing='0px';
+ ctx.restore();
+}
+
+/* FONTOVI: popis koji se nudi u izborniku */
+const FONTS={
+ "Arial":{fam:'Arial, Helvetica, sans-serif'},
+ "Georgia":{fam:'Georgia, serif'},
+ "Anton":{fam:'"Anton", Arial, sans-serif', w:"400"},
+ "Bebas Neue":{fam:'"Bebas Neue", Arial, sans-serif', w:"400"},
+ "Barlow Condensed":{fam:'"Barlow Condensed", Arial, sans-serif'},
+ "Oswald":{fam:'"Oswald", Arial, sans-serif', w:"700"},
+ "Montserrat":{fam:'"Montserrat", Arial, sans-serif'},
+ "Playfair Display":{fam:'"Playfair Display", Georgia, serif'},
+ "Archivo Black":{fam:'"Archivo Black", Arial, sans-serif', w:"400"},
+ "Roboto Condensed":{fam:'"Roboto Condensed", Arial, sans-serif',}
+  
+};
+
+/* svaki tekst na grafici ima svoj izbornik: [oznaka, naziv, početni font] */
+const FONT_TARGETS=[
+ ["club","GORNJI TEKST (GNK DINAMO ZAGREB)","Arial"],
+ ["opponent","PROTIVNIK","Arial"],
+ ["time","VRIJEME","Arial"],
+ ["title","NASLOV (LINE UP)","Bodoni Moda"],
+ ["numbers","BROJEVI IGRAČA","Arial"],
+ ["names","IMENA IGRAČA","Arial"],
+ ["bottom","DONJI LIJEVI TEKST (STADION)","Arial"],
+ ["venue","MJESTO (MAKSIMIR)","Arial"],
+ ["stamp","ŽIG (KD + Zagreb_W97)","Georgia"]
+];
+
+function buildFontBox(){
+ const box=document.getElementById('fontBox');
+ box.innerHTML='';
+ FONT_TARGETS.forEach(t=>{
+   const wrap=document.createElement('div'); wrap.className='field';
+   const lab=document.createElement('label'); lab.textContent=t[1];
+   const sel=document.createElement('select'); sel.id='font_'+t[0];
+   Object.keys(FONTS).forEach(name=>{
+     const o=document.createElement('option'); o.value=name; o.textContent=name;
+     if(name===t[2]) o.selected=true;
+     sel.appendChild(o);
+   });
+   sel.addEventListener('change',draw);
+   wrap.append(lab,sel); box.appendChild(wrap);
+ });
+}
+
+/* F('oznaka', debljina, veličina, kosa) -> font za canvas prema odabiru u izborniku */
+function F(id,weight,size,italic){
+ const sel=document.getElementById('font_'+id);
+ const f=FONTS[sel?sel.value:"Arial"]||FONTS["Arial"];
+ const it=italic?"italic ":"", wt=f.w||weight;
+ const safe=`${it}${wt} ${size}px Arial, Helvetica, sans-serif`;
+ let str=`${it}${wt} ${size}px ${f.fam}`;
+ try{
+  /* 1) web font još nije učitan -> sigurni font */
+  if(document.fonts&&!document.fonts.check(str,'ČAa1')) return safe;
+  /* 2) font je učitan, ali se slova "sruše" (širina ~0) -> sigurni font */
+  ctx.save(); if('letterSpacing' in ctx) ctx.letterSpacing='0px';
+  ctx.font=str; const w=ctx.measureText('MMMM').width; ctx.restore();
+  if(!(w>size*1.2)) return safe;
+ }catch(e){ return safe; }
+ return str;
+}
+
+/* učitaj Google fontove (uključujući č, ć, š, ž, đ) pa ponovo nacrtaj */
+function loadFonts(){
+ if(!document.fonts||!document.fonts.load) return;
+ Object.keys(FONTS).forEach(name=>{
+   ["400","700","900"].forEach(w=>{
+     document.fonts.load(`${w} 20px "${name}"`,"ČčĆćŠšŽžĐđ AaBb 0123456789").then(()=>{ if(!animRunning) draw(); }).catch(()=>{});
+   });
+ });
+}
+
+/* FORMAT: story (1080×1920) ili objava (1080×1350) */
+function applyFormat(){
+ const v=document.getElementById('format').value;
+ H=(v==='post')?1350:1920;
+ OFFY=(H-1350)/2;
+ canvas.height=H;
+ document.getElementById('download').textContent='PREUZMI PNG 1080×'+H;
+}
+
+/* PAMĆENJE: sve što upišeš/odabereš sprema se u preglednik i vraća pri sljedećem otvaranju */
+const STORE_KEY='dinamoLineupGen_v1';
+
+function saveState(){
+ try{
+  const data={};
+  document.querySelectorAll('input:not([type=file]),select').forEach(el=>{
+    if(el.id) data[el.id]=(el.type==='checkbox')?el.checked:el.value;
+  });
+  localStorage.setItem(STORE_KEY,JSON.stringify(data));
+ }catch(e){}
+}
+
+/* slike (pozadina, žig) spremamo smanjene da stanu u memoriju preglednika */
+function saveImage(key,img){
+ try{
+  const c=document.createElement('canvas'); const x=c.getContext('2d');
+  let type='image/png';
+  if(key==='bg'){
+    c.width=1080; c.height=1920; type='image/jpeg';
+    const sc=Math.max(1080/img.width,1920/img.height), sw=1080/sc, sh=1920/sc;
+    x.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,1080,1920);
+  }else{
+    c.width=Math.min(img.width,600); c.height=Math.round(img.height*c.width/img.width);
+    x.drawImage(img,0,0,c.width,c.height);
+  }
+  localStorage.setItem(STORE_KEY+'_'+key,c.toDataURL(type,0.85));
+ }catch(e){}
+}
+
+function loadState(){
+ try{
+  const data=JSON.parse(localStorage.getItem(STORE_KEY)||'null');
+  if(data){
+    Object.keys(data).forEach(id=>{
+      const el=document.getElementById(id); if(!el) return;
+      if(el.type==='checkbox') el.checked=data[id]; else el.value=data[id];
+    });
+  }
+  ['bg','logo'].forEach(key=>{
+    const url=localStorage.getItem(STORE_KEY+'_'+key); if(!url) return;
+    const img=new Image();
+    img.onload=()=>{ if(key==='bg') bgImg=img; else logoImg=img; draw(); };
+    img.src=url;
+  });
+ }catch(e){}
+}
+
+function clearState(){
+ try{ ['','_bg','_logo'].forEach(k=>localStorage.removeItem(STORE_KEY+k)); }catch(e){}
+}
+
+const defaults=[
+["KOTARSKI","24",false],
+["TABINAS","13",false],
+["GALEŠIĆ","15",false],
+["RADELJIĆ","6",false],
+["P. VINLÖF","22",false],
+["KAČAVENDA","80",false],
+["J. MIŠIĆ","27",true],
+["STOJKOVIĆ","10",false],
+["IVANUŠEC","17",false],
+["LISICA","21",false],
+["BELJO","9",false]
+];
+
+function buildPlayers(){
+ const box=document.getElementById('players');
+ box.innerHTML='';
+ defaults.forEach((p,i)=>{
+   const n=document.createElement('input'); n.type='text'; n.id='name'+i; n.value=p[0];
+   const num=document.createElement('input'); num.type='number'; num.id='num'+i; num.value=p[1];
+   const c=document.createElement('div'); c.className='check';
+   const cb=document.createElement('input'); cb.type='checkbox'; cb.id='cap'+i; cb.checked=p[2];
+   c.appendChild(cb);
+   box.append(n,num,c);
+   n.addEventListener('input',draw); num.addEventListener('input',draw); cb.addEventListener('change',draw);
+ });
+}
+
+/* SPREMLJENE SLIKE: čuvaju se u IndexedDB pod IMENOM igrača */
+const photoLib=new Map(), rowEls=[];
+let _db=null;
+function db(){ if(!_db) _db=new Promise((res,rej)=>{const r=indexedDB.open('dinamoPhotos',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('p'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);}); return _db; }
+function idbDo(mode,fn){ return db().then(d=>new Promise((res,rej)=>{const t=d.transaction('p',mode); fn(t.objectStore('p')); t.oncomplete=()=>res(); t.onerror=()=>rej(t.error);})); }
+const idbSet=(k,v)=>idbDo('readwrite',st=>st.put(v,k));
+const idbDel=k=>idbDo('readwrite',st=>st.delete(k));
+const idbClear=()=>idbDo('readwrite',st=>st.clear());
+function idbAll(){ return db().then(d=>new Promise((res,rej)=>{const out=[];const c=d.transaction('p','readonly').objectStore('p').openCursor();
+  c.onsuccess=()=>{const cur=c.result; if(cur){out.push([cur.key,cur.value]);cur.continue();}else res(out);}; c.onerror=()=>rej(c.error);})); }
+
+const pkey=i=>document.getElementById('name'+i).value.trim().toUpperCase();
+function syncPhotos(){ for(let i=0;i<11;i++){const e=photoLib.get(pkey(i)); playerImgs[i]=e?e.img:undefined;} }
+function refreshPhotoUI(){
+ rowEls.forEach((r,i)=>{
+  const name=document.getElementById('name'+i).value.toUpperCase();
+  const num=document.getElementById('num'+i).value;
+  const e=photoLib.get(pkey(i));
+  r.lab.textContent=(i+1)+'. '+name+' · '+num;
+  r.thumb.style.backgroundImage=e?'url("'+e.url+'")':'none';
+  r.thumb.textContent=e?'':'?'; r.thumb.classList.toggle('has',!!e);
+  r.st.textContent=e?'✓ slika spremljena':'nema slike'; r.st.classList.toggle('ok',!!e);
+  r.rm.style.display=e?'':'none';
+ });
+}
+function addPhoto(i,f){
+ const key=pkey(i); if(!key){alert('Prvo upiši ime igrača.');return;}
+ const url=URL.createObjectURL(f), img=new Image();
+ img.onload=()=>{
+  const old=photoLib.get(key); photoLib.set(key,{img,url});
+  if(old) URL.revokeObjectURL(old.url);
+  idbSet(key,f).catch(()=>alert('Slika se neće trajno spremiti u ovom pregledniku (privatni prozor?).'));
+  syncPhotos();refreshPhotoUI();draw();
+ };
+ img.src=url;
+}
+function removePhoto(i){
+ const key=pkey(i), e=photoLib.get(key); if(!e) return;
+ photoLib.delete(key); URL.revokeObjectURL(e.url); idbDel(key).catch(()=>{});
+ syncPhotos();refreshPhotoUI();draw();
+}
+function loadPhotoLib(){
+ try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+ idbAll().then(items=>items.forEach(([k,blob])=>{
+  const url=URL.createObjectURL(blob), img=new Image();
+  img.onload=()=>{photoLib.set(k,{img,url});syncPhotos();refreshPhotoUI();draw();};
+  img.src=url;
+ })).catch(()=>{});
+}
+
+/* za svakog igrača: kartica s minijaturom, imenom, slikom i pozicijom */
+function buildPhotoInputs(){
+ const box=document.getElementById('photoBox'); box.innerHTML=''; rowEls.length=0;
+ defaults.forEach((p,i)=>{
+  const row=document.createElement('div'); row.className='prow';
+  const thumb=document.createElement('div'); thumb.className='thumb';
+  const side=document.createElement('div');
+  const lab=document.createElement('div'); lab.className='plab';
+  const st=document.createElement('div'); st.className='pst';
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+  inp.addEventListener('change',e=>{const f=e.target.files[0]; e.target.value=''; if(f) addPhoto(i,f);});
+  const pos=document.createElement('input'); pos.type='text'; pos.id='pos'+i;
+  pos.placeholder='pozicija (npr. GOLMAN)'; pos.value=(i===0)?'GOLMAN':'';
+  pos.addEventListener('input',()=>draw());
+  const rm=document.createElement('button'); rm.className='secondary small'; rm.textContent='Ukloni sliku';
+  rm.addEventListener('click',()=>removePhoto(i));
+  side.append(lab,st,inp,pos,rm); row.append(thumb,side); box.appendChild(row);
+  rowEls.push({lab,thumb,st,rm});
+ });
+ syncPhotos(); refreshPhotoUI();
+}
+
+function drawCover(img){
+ const scale=Math.max(W/img.width,H/img.height);
+ const sw=W/scale, sh=H/scale;
+ const sx=(img.width-sw)/2, sy=(img.height-sh)/2;
+ ctx.drawImage(img,sx,sy,sw,sh,0,0,W,H);
+}
+
+function rounded(x,y,w,h,r){
+ ctx.beginPath();
+ ctx.roundRect(x,y,w,h,r);
+ ctx.fill();
+}
+
+function fitText(text,maxWidth,startSize,weight="800"){
+ let size=startSize;
+ while(size>18){
+   ctx.font=F('names',weight,size,true);
+   if(ctx.measureText(text).width<=maxWidth)return size;
+   size-=1;
+ }
+ return size;
+}
+
+/* Instagram ikona: zaobljeni kvadrat + krug + točkica */
+function drawInstagram(x,y,s,color){
+ ctx.save();
+ ctx.strokeStyle=color; ctx.fillStyle=color;
+ ctx.lineWidth=s*0.09;
+ ctx.beginPath(); ctx.roundRect(x,y,s,s,s*0.3); ctx.stroke();
+ ctx.beginPath(); ctx.arc(x+s/2,y+s/2,s*0.23,0,Math.PI*2); ctx.stroke();
+ ctx.beginPath(); ctx.arc(x+s*0.77,y+s*0.23,s*0.06,0,Math.PI*2); ctx.fill();
+ ctx.restore();
+}
+
+/* Sat: krug + kazaljke koje prate upisano vrijeme */
+function drawClock(cx,cy,r,color,timeStr){
+ const [h,m]=timeStr.split(':').map(Number);
+ const hourAngle=((h%12)+m/60)*30*Math.PI/180;
+ const minAngle=m*6*Math.PI/180;
+ ctx.save();
+ ctx.strokeStyle=color;
+ ctx.lineWidth=r*0.16; ctx.lineCap="round";
+ ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+ ctx.beginPath();
+ ctx.moveTo(cx,cy);
+ ctx.lineTo(cx+Math.sin(hourAngle)*r*0.5, cy-Math.cos(hourAngle)*r*0.5);
+ ctx.stroke();
+ ctx.beginPath();
+ ctx.moveTo(cx,cy);
+ ctx.lineTo(cx+Math.sin(minAngle)*r*0.75, cy-Math.cos(minAngle)*r*0.75);
+ ctx.stroke();
+ ctx.restore();
+}
+
+
+/* ===== FORMACIJA / TEREN ===== */
+function parseFormation(){
+ const c=document.getElementById('formCustom').value.trim();
+ let f=(c||document.getElementById('formation').value).split(/[-\s]+/).map(Number).filter(n=>n>0);
+ if(f.length<2||f.length>5||f.some(n=>n>5)||f.reduce((a,b)=>a+b,0)!==10) f=[4,3,3];
+ return f;
+}
+function formationPoints(f,x,y,w,h){
+ const sp={1:0,2:.36,3:.30,4:.235,5:.19};
+ const pts=[[x+w/2,y+h*.9]], rows=[[0]], n=f.length;
+ let idx=1;
+ f.forEach((m,k)=>{
+  const fy=n>1?0.72-k*(0.58/(n-1)):0.4, row=[];
+  for(let j=0;j<m;j++){ pts.push([x+w*(.5+(j-(m-1)/2)*sp[m]),y+h*fy]); row.push(idx++); }
+  rows.push(row);
+ });
+ return {pts,rows};
+}
+function drawPitchBase(c,st,x,y,w,h,a){
+ c.save(); c.globalAlpha=a;
+ c.beginPath(); c.roundRect(x,y,w,h,18); c.clip();
+ if(st==='B'){
+  c.fillStyle='rgba(3,12,26,.80)'; c.fillRect(x,y,w,h);
+  c.strokeStyle='rgba(8,125,255,.10)'; c.lineWidth=1;
+  for(let g=0;g<=w;g+=40){c.beginPath();c.moveTo(x+g,y);c.lineTo(x+g,y+h);c.stroke();}
+  for(let g=0;g<=h;g+=40){c.beginPath();c.moveTo(x,y+g);c.lineTo(x+w,y+g);c.stroke();}
+ }else{
+  const c1=st==='C'?'#22934a':'#1d6a3a', c2=st==='C'?'#1a7a38':'#175a31';
+  for(let i=0;i<10;i++){c.fillStyle=i%2?c1:c2;c.fillRect(x,y+h/10*i,w,h/10+1);}
+ }
+ c.restore();
+ c.save(); c.globalAlpha=a; c.lineWidth=4;
+ c.strokeStyle=st==='B'?'#2f95ff':'rgba(255,255,255,.88)'; c.fillStyle=c.strokeStyle;
+ if(st==='B'){c.shadowColor='#087dff';c.shadowBlur=14;}
+ c.strokeRect(x,y,w,h);
+ c.beginPath();c.moveTo(x,y+h/2);c.lineTo(x+w,y+h/2);c.stroke();
+ const cr=Math.min(w,h)*.115, cx=x+w/2;
+ c.beginPath();c.arc(cx,y+h/2,cr,0,Math.PI*2);c.stroke();
+ c.beginPath();c.arc(cx,y+h/2,5,0,Math.PI*2);c.fill();
+ const bw=w*.59,bh=h*.157,gw=w*.27,gh=h*.052,sy=h*.105,r=cr*.95;
+ const phi=Math.acos((bh-sy)/r);
+ [0,1].forEach(b=>{
+  const by=b?y+h:y, d=b?-1:1;
+  c.strokeRect(cx-bw/2,b?by-bh:by,bw,bh);
+  c.strokeRect(cx-gw/2,b?by-gh:by,gw,gh);
+  c.beginPath();c.arc(cx,by+d*sy,5,0,Math.PI*2);c.fill();
+  const c0=b?-Math.PI/2:Math.PI/2;
+  c.beginPath();c.arc(cx,by+d*sy,r,c0-phi,c0+phi);c.stroke();
+ });
+ c.restore();
+}
+const pitchCache={};
+function getPitchImg(st,w,h){
+ const k=st+w+'x'+h; if(pitchCache[k]) return pitchCache[k];
+ const M=30, cv=document.createElement('canvas'); cv.width=w+2*M; cv.height=h+2*M;
+ drawPitchBase(cv.getContext('2d'),st,M,M,w,h,1);
+ return pitchCache[k]=cv;
+}
+function drawPitchPlayer(st,i,x,y,s,a){
+ const name=document.getElementById('name'+i).value.toUpperCase();
+ const num=document.getElementById('num'+i).value;
+ const cap=document.getElementById('cap'+i).checked;
+ const r=(st==='C')?46:38, img=playerImgs[i];
+ ctx.save(); ctx.globalAlpha=a; ctx.translate(x,y); ctx.scale(s,s);
+ ctx.beginPath(); ctx.arc(0,0,r+5,0,Math.PI*2); ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fill();
+ ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2);
+ if(st==='B') ctx.fillStyle='#06182c';
+ else if(st==='C'){const g=ctx.createLinearGradient(0,-r,0,r);g.addColorStop(0,'#2a8bff');g.addColorStop(1,'#064a9c');ctx.fillStyle=g;}
+ else ctx.fillStyle='#087dff';
+ ctx.fill(); ctx.shadowBlur=0; ctx.shadowColor='transparent';
+ if(st==='C'&&img){
+  ctx.save(); ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.clip();
+  const ss=Math.min(img.width,img.height);
+  ctx.drawImage(img,(img.width-ss)/2,0,ss,ss,-r,-r,2*r,2*r);
+  ctx.restore();
+  ctx.fillStyle='#087dff'; ctx.beginPath(); ctx.arc(-r*.72,r*.72,17,0,Math.PI*2); ctx.fill();
+  ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.font=F('numbers','900',20);
+  ctx.fillText(String(num),-r*.72,r*.72+7);
+ }else{
+  ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.font=F('numbers','900',(st==='C')?40:32);
+  ctx.fillText(String(num),0,(st==='C')?14:11);
+ }
+ ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2);
+ ctx.lineWidth=4; ctx.strokeStyle=(st==='B')?'#2f95ff':'#fff'; ctx.stroke();
+ if(cap) ctx.drawImage(captainImg,r-20,-r-10,42,34);
+ const size=fitText(name,150,26);
+ ctx.font=F('names','900',size,true);
+ const tw=ctx.measureText(name).width;
+ ctx.fillStyle=(st==='A')?'rgba(0,0,0,.62)':(st==='B'?'#087dff':'rgba(8,125,255,.96)');
+ ctx.beginPath(); ctx.roundRect(-tw/2-12,r+8,tw+24,36,6); ctx.fill();
+ ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText(name,0,r+8+27);
+ ctx.restore();
+}
+function drawFormationScene(pt){
+ const st=document.getElementById('pitchStyle').value;
+ const f=parseFormation(), px=160,py=240,pw=760,ph=935;
+ const pa=ease(pt/600);
+ ctx.save();ctx.globalAlpha=pa;ctx.drawImage(getPitchImg(st,pw,ph),px-30,py-30);ctx.restore();
+ ctx.save(); ctx.globalAlpha=pa; ctx.textAlign='right';
+ ctx.fillStyle='#9ec8ff'; ctx.font=F('numbers','700',18);
+ if('letterSpacing' in ctx) ctx.letterSpacing='6px';
+ ctx.fillText('FORMACIJA',1010,122);
+ if('letterSpacing' in ctx) ctx.letterSpacing='0px';
+ ctx.fillStyle='#fff'; ctx.font=F('numbers','900',64,true);
+ ctx.fillText(f.join('-'),1010,176);
+ ctx.restore();
+ const {pts,rows}=formationPoints(f,px,py,pw,ph);
+ if(st==='B'){
+  const la=ease((pt-500-11*130)/600);
+  if(la>0){
+   ctx.save(); ctx.globalAlpha=la; ctx.lineJoin='round'; ctx.beginPath();
+   const ln=(a,b)=>{ctx.moveTo(pts[a][0],pts[a][1]);ctx.lineTo(pts[b][0],pts[b][1]);};
+   const near=(a,row)=>row.reduce((m,b)=>Math.abs(pts[b][0]-pts[a][0])<Math.abs(pts[m][0]-pts[a][0])?b:m,row[0]);
+   rows.forEach((row,k)=>{
+    for(let j=0;j<row.length-1;j++) ln(row[j],row[j+1]);
+    if(k<rows.length-1){const nx=rows[k+1]; row.forEach(a=>ln(a,near(a,nx))); nx.forEach(b=>ln(b,near(b,row)));}
+   });
+   ctx.lineWidth=10; ctx.strokeStyle='rgba(8,125,255,.28)'; ctx.stroke();
+   ctx.lineWidth=3; ctx.strokeStyle='rgba(158,200,255,.85)'; ctx.stroke(); ctx.restore();
+  }
+ }
+ for(let i=0;i<11;i++){
+  const t=ease((pt-500-i*130)/350); if(t<=0) continue;
+  drawPitchPlayer(st,i,pts[i][0],pts[i][1],.6+.4*t,t);
+ }
+}
+
+/* draw() bez argumenta crta gotovu sliku; draw(tm) crta animaciju u trenutku tm (ms) */
+function draw(tm){
+ const anim=(typeof tm==='number');
+ const pStyle=document.getElementById('pitchStyle').value;
+ const pt=anim?(pStyle==='off'?-1:tm-PITCH_START):((pStyle!=='off'&&document.getElementById('stillView').value==='pitch')?1e9:-1);
+ const rm=1-ease(pt/600);
+ ctx.setTransform(1,0,0,1,0,0);
+ ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; ctx.shadowBlur=0; ctx.shadowColor='transparent';
+ try{ctx.filter='none';}catch(e){}
+ if('letterSpacing' in ctx) ctx.letterSpacing='0px';
+ ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+ ctx.clearRect(0,0,W,H);
+
+ if(bgImg) drawCover(bgImg);
+ else{
+   const bg=ctx.createLinearGradient(0,0,W,H);
+   bg.addColorStop(0,"#06182c"); bg.addColorStop(1,"#02060b");
+   ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ }
+
+ /* dark readability layer */
+ let dark=ctx.createLinearGradient(0,0,760,0);
+ dark.addColorStop(0,"rgba(0,0,0,.93)");
+ dark.addColorStop(.55,"rgba(0,0,0,.78)");
+ dark.addColorStop(1,"rgba(0,0,0,0)");
+ ctx.fillStyle=dark;ctx.fillRect(0,0,760,H);
+
+ /* subtle top/bottom vignette */
+ let top=ctx.createLinearGradient(0,0,0,260);
+ top.addColorStop(0,"rgba(0,0,0,.60)");top.addColorStop(1,"rgba(0,0,0,0)");
+ ctx.fillStyle=top;ctx.fillRect(0,0,W,260);
+ let bot=ctx.createLinearGradient(0,H-250,0,H);
+ bot.addColorStop(0,"rgba(0,0,0,0)");bot.addColorStop(1,"rgba(0,0,0,.72)");
+ ctx.fillStyle=bot;ctx.fillRect(0,H-250,W,250);
+
+ /* blue graphic edge (cijela visina) */
+ ctx.fillStyle="rgba(0,125,255,.22)";ctx.fillRect(0,0,20,H);
+
+ /* sav sadržaj se crta u području 1080×1350, pomaknut na sredinu */
+ ctx.save();
+ ctx.translate(0,OFFY);
+
+ ctx.fillStyle="#087dff";ctx.fillRect(20,0,6,320);
+
+ /* svjetlosna zraka + velika slika igrača desno (ispod imena) */
+ if(rm>0){ctx.save();ctx.globalAlpha=rm;drawBeam();ctx.restore();}
+ if(anim){
+   for(let i=0;i<11;i++){
+     const photo=playerImgs[i]; if(!photo) continue;
+     const en=ease((tm-i*STEP-100)/400);
+     const ex=(i<10)?ease((tm-(i+1)*STEP-100)/400):0;
+     const a=en*(1-ex)*rm;
+     if(a>0){
+       const dx=(1-en)*150-ex*100;
+       drawBigPhoto(photo,a,dx);
+       drawTag(i,a,dx*0.6);
+     }
+   }
+ }else{
+   const first=playerImgs.findIndex(p=>p);
+   if(first>=0){
+     drawBigPhoto(playerImgs[first],rm,0);
+     drawTag(first,rm,0);
+   }
+ }
+
+ /* top */
+ ctx.fillStyle="#dce8f5";
+ ctx.font=F('club',"700",17);
+ ctx.fillText(document.getElementById('club').value.toUpperCase(),70,57);
+
+ /* opponent + time */
+ const opponent=document.getElementById('opponent').value.toUpperCase();
+ const time=document.getElementById('time').value;
+ ctx.textAlign="right";
+ ctx.font=F('opponent',"700",18);ctx.fillStyle="#dce8f5";
+ ctx.fillText(opponent,1010,55);
+ ctx.font=F('time',"900",28);ctx.fillStyle="#fff";
+ ctx.fillText(time,1010,87);
+ const tw=ctx.measureText(time).width;            // širina vremena
+ drawClock(1010-tw-26,76,13,"#fff",time);         // sat lijevo od vremena
+ ctx.textAlign="left";
+
+ /* title */
+ ctx.fillStyle="#fff";
+ ctx.font=F('title',"900",100);
+ ctx.fillText(document.getElementById('title').value.toUpperCase(),65,160);
+ /* title underline: blue | white | red | white | blue */
+ const ux=68, uy=185, uw=320, uh=8, useg=uw/5;
+ const ucolors=["#087dff","#ffffff","#000000","#ffffff","#087dff"];
+ ucolors.forEach((c,i)=>{ctx.fillStyle=c;ctx.fillRect(ux+useg*i,uy,useg,uh);});
+
+ /* okomita crta kroz sve igrače (u animaciji se spušta prema dolje) */
+ const lineLen=anim?Math.min(760,76*tm/STEP):760;
+ ctx.fillStyle="#087dff";
+ ctx.globalAlpha=rm;ctx.fillRect(48,250,4,lineLen);ctx.globalAlpha=1;
+
+ /* roster */
+ let y=265;
+ for(let i=0;i<11;i++){
+   const p=anim?ease((tm-i*STEP)/450):1;          /* ime, broj, točka */
+   if(p<=0){y+=76;continue;}
+
+   const name=document.getElementById('name'+i).value.toUpperCase();
+   const num=document.getElementById('num'+i).value;
+   const captain=document.getElementById('cap'+i).checked;
+
+   ctx.save();
+   ctx.globalAlpha=p*rm;
+
+   /* točka na crti */
+   ctx.fillStyle="#fff";
+   ctx.beginPath(); ctx.arc(50,y-15,8*p,0,Math.PI*2); ctx.fill();
+
+   /* ime i broj klize s lijeve strane */
+   ctx.translate(-(1-p)*60,0);
+
+   /* number box */
+   ctx.fillStyle="#087dff";
+   ctx.beginPath();
+   ctx.moveTo(70,y-33);ctx.lineTo(175,y-35);ctx.lineTo(160,y+5);ctx.lineTo(70,y+5);ctx.closePath();ctx.fill();
+
+   ctx.fillStyle="#fff";
+   ctx.font=F('numbers',"900",30);
+   ctx.fillText(String(num),91,y-3);
+
+   /* player name */
+   const size=fitText(name,330,36);
+   ctx.font=F('names',"900",size,true);
+   ctx.fillStyle="#fff";
+   ctx.fillText(name,195,y-3);
+
+   if(captain){
+     /* captain band sits right after the player's name */
+     const nameW=ctx.measureText(name).width;
+     const cx=195+nameW+16;
+     ctx.drawImage(captainImg,cx,y-35,54,43);
+   }
+   ctx.restore();
+
+   y+=76;
+ }
+
+ if(pt>0) drawFormationScene(pt);
+ /* venue */
+ /* tricolor line: blue | white | black */
+ const lx=65, ly=1260, lw=950, lh=6, seg=lw/3;
+ ctx.fillStyle="#087dff"; ctx.fillRect(lx,ly,seg,lh);
+ ctx.fillStyle="#ffffff"; ctx.fillRect(lx+seg,ly,seg,lh);
+ ctx.fillStyle="#000000"; ctx.fillRect(lx+seg*2,ly,seg,lh);
+ /* thin light outline so the black part stays visible on dark background */
+ ctx.strokeStyle="rgba(255,255,255,.35)"; ctx.lineWidth=1;
+ ctx.strokeRect(lx+seg*2+.5,ly+.5,seg-1,lh-1);
+ ctx.fillStyle="#eaf2fb";
+ ctx.font=F('bottom',"700",18);
+ ctx.fillText(document.getElementById('bottom').value.toUpperCase(),70,1300);
+
+ /* Zagreb_W97 watermark/logo */
+ if(logoImg){
+   ctx.drawImage(logoImg,865,1180,150,110);
+ }else{
+   ctx.textAlign="right";
+   ctx.fillStyle="#fff";
+   ctx.font=F('stamp',"900",44,true);
+   ctx.fillText("KD",1010,1225);
+   ctx.fillStyle="#087dff";
+   ctx.fillRect(895,1235,115,5);
+   ctx.font=F('stamp',"700",20,true);
+   ctx.fillStyle="#fff";
+   ctx.fillText("Zagreb_W97",1010,1270);
+   ctx.textAlign="left";
+ }
+
+ /* MAKSIMIR */
+ ctx.textAlign="center";
+ ctx.fillStyle="#fff";
+ ctx.font=F('venue',"700",23);
+ ctx.fillText(document.getElementById('venue').value.toUpperCase(),540,1300);
+ ctx.textAlign="left";
+
+ /* Instagram ikona (donji desni kut) */
+ drawInstagram(1022,1248,29,"#fff");
+
+ ctx.restore();
+ if(!anim) saveState();
+}
+
+/* ANIMACIJA: prikaz i (opcionalno) snimanje videa */
+function preloadUsedFonts(){
+ if(!document.fonts||!document.fonts.load) return Promise.resolve();
+ const jobs=[];
+ FONT_TARGETS.forEach(t=>{
+  const sel=document.getElementById('font_'+t[0]);
+  const f=FONTS[sel?sel.value:'Arial']||FONTS['Arial'];
+  ['400','700','900'].forEach(w=>[false,true].forEach(it=>{
+   jobs.push(document.fonts.load((it?'italic ':'')+(f.w||w)+' 30px '+f.fam,'ČčĆćŠšŽžĐđ AaBb0123456789').catch(()=>{}));
+  }));
+ });
+ return Promise.race([Promise.all(jobs),new Promise(r=>setTimeout(r,2500))]);
+}
+function playAnim(record){
+ if(animRunning) return;
+ animRunning=true;
+ preloadUsedFonts().then(()=>{ animRunning=false; startAnim(record); });
+}
+function startAnim(record){
+ if(animRunning) return;
+ let rec=null, chunks=[], mime='';
+ if(record){
+   if(!canvas.captureStream||!window.MediaRecorder){
+     alert('Ovaj preglednik ne podržava snimanje videa. Probaj Chrome.');
+     return;
+   }
+   const types=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'];
+   mime=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
+   const stream=canvas.captureStream(30);
+   const opts={videoBitsPerSecond:8000000};
+   if(mime) opts.mimeType=mime;
+   rec=new MediaRecorder(stream,opts);
+   rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
+   rec.onstop=()=>{
+     const type=rec.mimeType||mime||'video/webm';
+     const ext=type.includes('mp4')?'mp4':'webm';
+     const blob=new Blob(chunks,{type:type});
+     const a=document.createElement('a');
+     a.href=URL.createObjectURL(blob);
+     a.download='DINAMO_LINEUP_STORY.'+ext;
+     a.click();
+   };
+   rec.start();
+ }
+ animRunning=true;
+ const t0=performance.now();
+ const END=(document.getElementById('pitchStyle').value==='off')?ANIM_TOTAL+HOLD:PITCH_START+PITCH_DUR+HOLD;
+ function frame(){
+   const tm=Math.max(0,performance.now()-t0);
+   try{draw(Math.min(tm,END));}catch(e){console.error(e);}
+   if(tm<END){ requestAnimationFrame(frame); }
+   else{
+     animRunning=false;
+     if(rec&&rec.state!=='inactive') rec.stop();
+     draw();
+   }
+ }
+ requestAnimationFrame(frame);
+}
+
+function bind(){
+ ['formation','pitchStyle','stillView'].forEach(id=>document.getElementById(id).addEventListener('change',()=>draw()));
+ document.querySelectorAll('input:not(#bg):not(#logoFile)').forEach(el=>el.addEventListener('input',draw));
+}
+document.getElementById('format').addEventListener('change',()=>{applyFormat();draw();});
+document.getElementById('play').addEventListener('click',()=>playAnim(false));
+document.getElementById('record').addEventListener('click',()=>playAnim(true));
+document.getElementById('bg').addEventListener('change',e=>{
+ const f=e.target.files[0];if(!f)return;
+ const img=new Image();
+ img.onload=()=>{bgImg=img;saveImage('bg',img);draw()};
+ img.src=URL.createObjectURL(f);
+});
+document.getElementById('logoFile').addEventListener('change',e=>{
+ const f=e.target.files[0];if(!f)return;
+ const img=new Image();
+ img.onload=()=>{logoImg=img;saveImage('logo',img);draw()};
+ img.src=URL.createObjectURL(f);
+});
+document.getElementById('download').addEventListener('click',()=>{
+ const a=document.createElement('a');
+ a.download='DINAMO_LINEUP_1080x'+H+'.png';
+ a.href=canvas.toDataURL('image/png');
+ a.click();
+});
+document.getElementById('reset').addEventListener('click',()=>{
+ document.getElementById('title').value='LINE UP';
+ document.getElementById('club').value='GNK DINAMO ZAGREB';
+ document.getElementById('opponent').value='SLAVEN BELUPO';
+ document.getElementById('time').value='20:00';
+ document.getElementById('venue').value='STADION';
+ document.getElementById('bottom').value='STADION';
+ document.getElementById('watermark').value='Zagreb_W97';
+ document.getElementById('format').value='story';
+ document.getElementById('formation').value='4-3-3';document.getElementById('formCustom').value='';document.getElementById('pitchStyle').value='A';document.getElementById('stillView').value='pitch';
+ bgImg=null;logoImg=null;
+ clearState();
+ applyFormat();
+ buildFontBox();
+ buildPlayers();buildPhotoInputs();bind();draw();
+});
+document.getElementById('players').addEventListener('input',()=>{syncPhotos();refreshPhotoUI();draw();});
+document.getElementById('clearPhotos').addEventListener('click',()=>{
+ if(!confirm('Obrisati sve spremljene slike igrača?')) return;
+ photoLib.forEach(e=>URL.revokeObjectURL(e.url)); photoLib.clear(); idbClear().catch(()=>{});
+ syncPhotos();refreshPhotoUI();draw();
+});
+buildFontBox();
+buildPlayers();buildPhotoInputs();loadState();syncPhotos();refreshPhotoUI();applyFormat();bind();draw();loadPhotoLib();
+loadFonts();
+</script>
+</body>
+</html>
