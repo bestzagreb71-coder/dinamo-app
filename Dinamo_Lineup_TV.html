@@ -385,13 +385,13 @@ function drawPanelL(fin, formTxt) {
   const la = clamp((fin - .35) / .65);
   if (la > 0) {
     ctx.globalAlpha = la;
-    ctx.textAlign = 'left'; ctx.fillStyle = '#fff'; ctx.font = FONT(800, 36); ctx.fillText((S.panelMode === 'subs' ? 'REZERVE' : S.panelTitle || 'POSTAVA').toUpperCase(), x0 + 36, 305);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#fff'; ctx.font = FONT(800, 38); ctx.fillText((S.panelMode === 'subs' ? 'REZERVE' : S.panelTitle || 'POSTAVA').toUpperCase(), x0 + 36, 305);
     ctx.fillStyle = ACC; ctx.fillRect(x0 + 36, 316, PW - 72, 3);
     const L = subsLines(), step = Math.min(46, 520 / Math.max(L.length, 1));
     L.forEach((r, i) => {
       const y = 362 + i * step;
       ctx.fillStyle = ACC; ctx.textAlign = 'right'; ctx.font = FONT(800, 32); ctx.fillText(r[0], x0 + 100, y);
-      ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; fitText((r[1] || '').toUpperCase(), PW - 150, 32, 700); ctx.fillText((r[1] || '').toUpperCase(), x0 + 118, y);
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; fitText((r[1] || '').toUpperCase(), PW - 150, 36, 700); ctx.fillText((r[1] || '').toUpperCase(), x0 + 118, y);
     });
     // trener
     const cy = 1010;
