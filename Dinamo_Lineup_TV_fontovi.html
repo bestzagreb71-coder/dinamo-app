@@ -385,18 +385,18 @@ function drawPanelP(fin, formTxt) {
   drawCrest(cx, 100, 130);
   ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#fff'; ctx.font = FONT(800, 58); ctx.fillText(formTxt, cx, 250); ctx.restore();
   if (fin <= 0) return;
-  const PH = 400, y0 = H - PH * fin;
+  const PH = 500, y0 = H - PH * fin;
   ctx.save();
   ctx.beginPath(); ctx.moveTo(0, y0 + 55); ctx.lineTo(cx, y0); ctx.lineTo(W, y0 + 55); ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
   const g2 = ctx.createLinearGradient(0, y0, 0, H); g2.addColorStop(0, '#1b3fd0'); g2.addColorStop(1, '#0a1f72'); ctx.fillStyle = g2; ctx.fill();
   ctx.globalAlpha = clamp((fin - .4) / .6); ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left'; ctx.fillStyle = '#fff'; ctx.font = FONT(800, 36); ctx.fillText((S.panelMode === 'subs' ? 'REZERVE' : S.panelTitle || 'POSTAVA').toUpperCase(), 40, y0 + 108);
   ctx.fillStyle = ACC; ctx.fillRect(40, y0 + 120, W - 80, 3);
-  const L = subsLines(), per = Math.ceil(L.length / 2), step = Math.min(40, 215 / Math.max(per - 1, 1));
+  const L = subsLines(), per = Math.ceil(L.length / 2), step = Math.min(54, 280 / Math.max(per - 1, 1));
   L.forEach((r, i) => {
-    const col = i < per ? 0 : 1, row = i < per ? i : i - per, ox = col * 345, y = y0 + 165 + row * step;
-    ctx.fillStyle = ACC; ctx.textAlign = 'right'; ctx.font = FONT(800, 28); ctx.fillText(r[0], 40 + ox + 62, y);
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; fitText((r[1] || '').toUpperCase(), 215, 28, 700); ctx.fillText((r[1] || '').toUpperCase(), 40 + ox + 78, y);
+    const col = i < per ? 0 : 1, row = i < per ? i : i - per, ox = col * 350, y = y0 + 190 + row * step;
+    ctx.fillStyle = ACC; ctx.textAlign = 'right'; ctx.font = FONT(800, 38); ctx.fillText(r[0], 40 + ox + 72, y);
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; fitText((r[1] || '').toUpperCase(), 245, 38, 700); ctx.fillText((r[1] || '').toUpperCase(), 40 + ox + 78, y);
   });
   if (cache.coach) ctx.drawImage(cache.coach, 800, y0 + 128, 104, 130);
   ctx.textAlign = 'left'; ctx.fillStyle = ACC; ctx.font = FONT(800, 28); ctx.fillText('TRENER', 760, y0 + 292);
