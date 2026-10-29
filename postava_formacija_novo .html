@@ -706,7 +706,9 @@ function drawFormationScene(pt){
  if('letterSpacing' in ctx) ctx.letterSpacing='6px';
  ctx.fillText('FORMACIJA',1010,122);
  if('letterSpacing' in ctx) ctx.letterSpacing='0px';
- ctx.fillStyle='#fff'; ctx.font=F('numbers','900',64,true);
+ const gold=ctx.createLinearGradient(800,120,1010,180);
+ gold.addColorStop(0,'#ffe9a0'); gold.addColorStop(.5,'#f5c542'); gold.addColorStop(1,'#c8921a');
+ ctx.fillStyle=gold; ctx.font=F('numbers','900',64,true);
  ctx.fillText(f.join('-'),1010,176);
  ctx.restore();
  const {pts,rows}=formationPoints(f,px,py,pw,ph);
