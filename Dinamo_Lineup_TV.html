@@ -256,8 +256,7 @@ function drawPlayer(i, cx, by, w, alpha, pk) {
   ctx.beginPath(); ctx.moveTo(x + c, y); ctx.lineTo(x + w - c, y); ctx.lineTo(x + w, y + c); ctx.lineTo(x + w, by); ctx.lineTo(x, by); ctx.lineTo(x, y + c); ctx.closePath();
   const g = ctx.createLinearGradient(0, y, 0, by); g.addColorStop(0, 'rgba(24,70,205,0)'); g.addColorStop(.38, 'rgba(24,70,205,.86)'); g.addColorStop(1, '#091f72');
   ctx.fillStyle = g; ctx.fill();
-    ctx.fillStyle = ACC; ctx.fillRect(x, by - w * .022, w, w * .022);
-  
+  ctx.fillStyle = ACC; ctx.fillRect(x, by - w * .022, w, w * .022);
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = ACC; ctx.font = FONT(800, h * .56); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 6;
   ctx.fillText(P.num || '', cx, y + h * .64); ctx.shadowBlur = 0;
