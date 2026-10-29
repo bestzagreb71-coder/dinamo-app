@@ -279,15 +279,56 @@ function drawInstaIcon(x, y, s) {
   ctx.restore();
 }
 function drawTopLeft() {
-  if (!LAY.land) {
-    if (imgs.league) { const im = imgs.league, s = Math.min(110 / im.width, 110 / im.height); ctx.drawImage(im, 40, 40, im.width * s, im.height * s); }
-    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 8;
-    if (S.match) { ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; fitText(S.match.toUpperCase(), W - 80, 40, 700); ctx.fillText(S.match.toUpperCase(), W / 2, 352); }
-    if (S.handle) { ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = FONT(600, 30); ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText(S.handle, W - 40, 70);
-    drawInstaIcon(W - 40 - ctx.measureText(S.handle).width - 14 - 34, 43, 34);
-     }
-    ctx.restore(); return;
+  
+if (!LAY.land) {
+  if (imgs.league) {
+    const im = imgs.league;
+    const s = Math.min(110 / im.width, 110 / im.height);
+    ctx.drawImage(im, 40, 40, im.width * s, im.height * s);
   }
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,.7)';
+  ctx.shadowBlur = 8;
+
+  // Natpis utakmice
+  if (S.match) {
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    fitText(S.match.toUpperCase(), W - 80, 40, 700);
+    ctx.fillText(S.match.toUpperCase(), W / 2, 352);
+  }
+
+  // Instagram ikona i potpis - poravnani zajedno
+  if (S.handle) {
+    const iconSize = 34;
+    const gap = 14;
+    const rightMargin = 40;
+
+    ctx.fillStyle = 'rgba(255,255,255,.9)';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    // Smanji font ako je potpis predugačak
+    fitText(S.handle, W - 180, 30, 600);
+
+    const textWidth = ctx.measureText(S.handle).width;
+    const textX = W - rightMargin;
+    const textY = 70;
+    const iconX = textX - textWidth - gap - iconSize;
+
+    // Instagram ikona
+    drawInstaIcon(iconX, textY - iconSize / 2, iconSize);
+
+    // Potpis
+    ctx.fillText(S.handle, textX, textY);
+  }
+
+  ctx.restore();
+  return;
+}
+
   let x = 60;
   if (imgs.league) { const im = imgs.league, s = Math.min(110 / im.width, 110 / im.height); ctx.drawImage(im, x, 40, im.width * s, im.height * s); x += im.width * s + 24; }
   if (S.match) { ctx.save(); ctx.fillStyle = '#fff'; ctx.font = FONT(700, 38); ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 8; ctx.fillText(S.match.toUpperCase(), x, 92); ctx.restore(); }
