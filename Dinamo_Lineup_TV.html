@@ -283,8 +283,9 @@ function drawTopLeft() {
     if (imgs.league) { const im = imgs.league, s = Math.min(110 / im.width, 110 / im.height); ctx.drawImage(im, 40, 40, im.width * s, im.height * s); }
     ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 8;
     if (S.match) { ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; fitText(S.match.toUpperCase(), W - 80, 40, 700); ctx.fillText(S.match.toUpperCase(), W / 2, 352); }
-    if (S.handle) { ctx.fillText(S.handle, W - 40, 70);
-    drawInstaIcon(W - 40 - ctx.measureText(S.handle).width - 14 - 34, 43, 34); }
+    if (S.handle) { ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = FONT(600, 30); ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText(S.handle, W - 40, 70);
+    drawInstaIcon(W - 40 - ctx.measureText(S.handle).width - 14 - 34, 43, 34);
+     }
     ctx.restore(); return;
   }
   let x = 60;
