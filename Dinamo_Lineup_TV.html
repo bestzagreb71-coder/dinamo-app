@@ -347,7 +347,7 @@ function drawPanelP(fin, formTxt) {
   const cx = W / 2, hh = 310;
   ctx.save();
   ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, hh - 70); ctx.lineTo(cx, hh); ctx.lineTo(0, hh - 70); ctx.closePath();
-  const g = ctx.createLinearGradient(0, 0, 0, hh); g.addColorStop(0, '#FFFFFF'); g.addColorStop(1, '#0f2a98'); ctx.fillStyle = g; ctx.fill(); ctx.restore();
+  const g = ctx.createLinearGradient(0, 0, 0, hh); g.addColorStop(0, '#1b3fdo'); g.addColorStop(1, '#0f2a98'); ctx.fillStyle = g; ctx.fill(); ctx.restore();
   drawCrest(cx, 100, 130);
   ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#fff'; ctx.font = FONT(800, 58); ctx.fillText(formTxt, cx, 250); ctx.restore();
   if (fin <= 0) return;
