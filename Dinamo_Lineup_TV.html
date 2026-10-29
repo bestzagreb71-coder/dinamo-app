@@ -265,13 +265,26 @@ function drawPlayer(i, cx, by, w, alpha, pk) {
   if (P.cap) { ctx.fillStyle = ACC; const bw = w * .14; ctx.fillRect(x + w * .07, y + h * .22, bw, bw * .8); ctx.fillStyle = '#062'; ctx.fillStyle = '#041a55'; ctx.font = FONT(800, bw * .75); ctx.fillText('C', x + w * .07 + bw / 2, y + h * .22 + bw * .68); }
   ctx.restore();
 }
-
+function drawInstaIcon(x, y, s) {
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.fillStyle = 'rgba(255,255,255,.9)';
+  ctx.lineWidth = s * .09; ctx.shadowBlur = 0;
+  const r = s * .3;
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + s, y, x + s, y + s, r); ctx.arcTo(x + s, y + s, x, y + s, r);
+  ctx.arcTo(x, y + s, x, y, r); ctx.arcTo(x, y, x + s, y, r);
+  ctx.closePath(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s * .23, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(x + s * .76, y + s * .24, s * .06, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
 function drawTopLeft() {
   if (!LAY.land) {
     if (imgs.league) { const im = imgs.league, s = Math.min(110 / im.width, 110 / im.height); ctx.drawImage(im, 40, 40, im.width * s, im.height * s); }
     ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 8;
     if (S.match) { ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; fitText(S.match.toUpperCase(), W - 80, 40, 700); ctx.fillText(S.match.toUpperCase(), W / 2, 352); }
-    if (S.handle) { ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = FONT(600, 30); ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText(S.handle, W - 40, 70); }
+    if (S.handle) { ctx.fillText(S.handle, W - 40, 70);
+    drawInstaIcon(W - 40 - ctx.measureText(S.handle).width - 14 - 34, 43, 34); } ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText(S.handle, W - 40, 70); }
     ctx.restore(); return;
   }
   let x = 60;
