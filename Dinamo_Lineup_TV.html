@@ -257,16 +257,17 @@ function drawPlayer(i, cx, by, w, alpha, pk) {
   const g = ctx.createLinearGradient(0, y, 0, by); g.addColorStop(0, 'rgba(24,70,205,0)'); g.addColorStop(.38, 'rgba(24,70,205,.86)'); g.addColorStop(1, '#091f72');
   ctx.fillStyle = g; ctx.fill();
   
-  // Višebojna linija ispod imena igrača (PLAVA – BIJELA – CRNA – BIJELA – PLAVA)
+   // Višebojna linija ispod imena: PLAVA – BIJELA – CRNA – BIJELA – PLAVA
   const lineY = by - w * .022;
-  const gradLine = ctx.createLinearGradient(x, lineY, x + w, lineY);
-  gradLine.addColorStop(0.0, '#1b4fd8'); // PLAVA
+  const gradLine = ctx.createLinearGradient(x, 0, x + w, 0);
+  gradLine.addColorStop(0.0, '#1b4fd8'); // PLAVA (lijevi kraj)
   gradLine.addColorStop(0.25, '#ffffff'); // BIJELA
-  gradLine.addColorStop(0.5, '#000000'); // CRNA
+  gradLine.addColorStop(0.5, '#000000'); // CRNA (sredina)
   gradLine.addColorStop(0.75, '#ffffff'); // BIJELA
-  gradLine.addColorStop(1.0, '#1b4fd8'); // PLAVA
+  gradLine.addColorStop(1.0, '#1b4fd8'); // PLAVA (desni kraj)
   ctx.fillStyle = gradLine;
   ctx.fillRect(x, lineY, w, Math.max(3, w * .025));
+
 
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = ACC; ctx.font = FONT(800, h * .56); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 6;
