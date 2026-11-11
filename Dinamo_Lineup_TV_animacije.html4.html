@@ -478,7 +478,7 @@ function variantItem(V, sl, i, lt, R, sw, base, big) {
   const o = { i, key: g.v, cx: X, by: Y, w: ws, alpha: 1, pk: .9, sh: 0 };
   const flash = (f, w) => { if (f > 0) { ctx.save(); ctx.globalAlpha = f; ctx.fillStyle = '#fff'; ctx.fillRect(X - w / 2, Y - w * .54, w, w * .54); ctx.restore(); } };
   if (V === '1') {            // PAD S NEBA: svjetlosni snop, odskok, val na terenu
-    const b = easeBo(clamp(lt / 750)); o.by = Y - (1 - b) * H * .75; o.alpha = clamp(lt / 160);
+    const b = easeO(clamp(lt / 900)); o.by = Y - (1 - b) * H * .4; o.alpha = clamp(lt / 160);
     o.pre = () => {
       const bl = clamp(1 - lt / 750), bw = ws * .5;
       if (bl > 0) { const gr = ctx.createLinearGradient(0, 0, 0, Y); gr.addColorStop(0, 'rgba(95,216,255,0)'); gr.addColorStop(1, 'rgba(95,216,255,.55)'); ctx.save(); ctx.globalAlpha = bl; ctx.fillStyle = gr; ctx.fillRect(X - bw / 2, 0, bw, Y); ctx.restore(); }
