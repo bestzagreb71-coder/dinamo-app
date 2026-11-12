@@ -52,6 +52,7 @@ h1{margin:0;padding:0 18px;font-size:38px;letter-spacing:.07em;text-transform:up
 .pitch{border-width:1px!important;border-color:rgba(255,255,255,.35)!important;border-radius:28px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 14px 44px rgba(0,0,0,.45)}
 .dot{border-color:transparent}.p.on .dot{background:var(--blue);border-color:#fff}.fm i{color:#04162b}
 .bar{background:rgba(5,10,28,.35);border-top:1px solid rgba(255,255,255,.3);color:#fff}
+.p.dim .dot,.p.dim .lbl{opacity:.35}.p.act .dot{transform:scale(1.3);box-shadow:0 0 0 10px rgba(255,255,255,.22),0 0 30px var(--red)}.p .lbl{transition:opacity .3s}.p .dot{transition:.3s}
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script></head><body>
 <div id="app"><div id="ed"></div>
 <div id="view"><div id="stage"><div id="bgm"></div><div class="bg"></div>
@@ -117,7 +118,7 @@ function render(){
 }
 function show(i){cur=i;const p=cfg.players[i],c=cfg.coach,u=i<0?c.photo:p.photo;
  $("cph").innerHTML=u?'<img src="'+u+'">':esc(i<0?ini(c):ini(p));$("big").textContent=i<0?"":p.num;$("pos").textContent=i<0?"TRENER":p.pos;$("cn1").textContent=i<0?c.first:p.first;$("cn2").textContent=i<0?c.last:p.last;
- const ph=$("cph");ph.style.animation="none";void ph.offsetWidth;ph.style.animation="fd .4s both";rows.forEach((r,k)=>r.classList.toggle("on",k===i))}
+ const ph=$("cph");ph.style.animation="none";void ph.offsetWidth;ph.style.animation="fd .4s both";rows.forEach((r,k)=>r.classList.toggle("on",k===i));pls.forEach((x,k)=>{x.classList.toggle("act",k===i);x.classList.toggle("dim",i>=0&&k!==i)})}
 function final(){T.forEach(clearTimeout);T=[];S.classList.remove("play");rows.forEach(r=>r.classList.add("in"));pls.forEach(x=>x.classList.add("in"));show(-1);rows.forEach(r=>r.classList.remove("on"))}
 function refresh(){render();final();save();fit()}
 function run(){T.forEach(clearTimeout);T=[];S.classList.remove("play");render();rows.forEach(r=>r.classList.remove("in"));pls.forEach(x=>x.classList.remove("in"));show(-1);void S.offsetWidth;S.classList.add("play");
